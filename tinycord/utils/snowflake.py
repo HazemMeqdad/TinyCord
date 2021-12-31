@@ -19,7 +19,13 @@ class Snowflake(int):
     EPOCH = 1420070400000
 
     def __new__(cls, id: int) -> 'Snowflake':
-        if not cls.MIN <= id <= cls.MAX:
+        """
+            This function is used to create a snowflake.
+        """
+        if type(id) is type(None):
+            return None
+
+        if not cls.MIN <= int(id) <= cls.MAX:
             raise ValueError(f'{id} is not a valid snowflake.')
         try:
             return super().__new__(cls, id)
