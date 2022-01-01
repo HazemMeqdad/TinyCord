@@ -6,6 +6,7 @@ if typing.TYPE_CHECKING:
 
 from ..mixins import Hashable
 from ...utils import Snowflake
+from ..user import User
 
 @dataclasses.dataclass(repr=False)
 class Message(Hashable):
@@ -35,11 +36,9 @@ class Message(Hashable):
             data.get('guild_id'))
         """The guild id."""
 
-        self.author: typing.Dict = data.get('author')
+        self.author: "User" = User(client, 
+            **data.get('author'))
         """The author of the message."""
-        
-        self.member: typing.Union[typing.Dict[str,typing.Any], None] = data.get('member')
-        """The member of the message."""
 
         self.content: str = data.get('content')
         """The content of the message."""
@@ -116,3 +115,4 @@ class Message(Hashable):
         """The sticker items of the message."""
         
         self.stickers: typing.Union[str, None] = data.get('stickers', [])
+        """The stickers of the message."""

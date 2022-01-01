@@ -11,8 +11,11 @@ import logging
 
 if typing.TYPE_CHECKING:
     from .intents import Intents
+    from .models import *
 
 from .core import Gateway, HTTPClient, GatewayDispatch
+from .middleware import get_middlewares
+from .utils import Snowflake
 
 logger: logging.Logger = logging.Logger("tinycord")
 events: typing.List[typing.Coroutine] = {}
@@ -45,6 +48,13 @@ def middleware_event(event: str):
         return warpper
     return decorator
 
+for event, ware in get_middlewares().items():
+    """
+        This function is used to register a middleware event.
+        This is used to register middlewares before anything happens.
+    """
+    middleware_event(event)(ware)
+
 class Client:
     """
         The bridge between Python and Discord API.
@@ -74,6 +84,12 @@ class Client:
 
         self.loop: asyncio.AbstractEventLoop = asyncio.get_event_loop()
         self.http = HTTPClient(self)
+
+        self.messages: typing.List["Message"] = []
+        self.guilds: typing.List["Guild"] = []
+        self.channels: typing.List["All"] = []
+        self.users: typing.List["User"] = []
+        self.voice_states: typing.List["Voicestate"] = []
 
     @classmethod
     def event(cls, func: typing.Callable) -> typing.Union[typing.Callable, typing.Awaitable]:
@@ -187,3 +203,35 @@ class Client:
         
         if callback != None:
             await callback(*args)
+
+    # Get methods
+
+    def get_guild(self, id: Snowflake) -> "Guild":
+        """
+            This function is used to get a guild.
+        """
+        return next(filter(lambda guild: guild.id == Snowflake(id), self.guilds), None)
+
+    def get_channel(self, id: Snowflake) -> "All":
+        """
+            This function is used to get a channel.
+        """
+        return next(filter(lambda channel: channel.id == Snowflake(id), self.channels), None)
+
+    def get_user(self, id: Snowflake) -> "User":
+        """
+            This function is used to get a user.
+        """
+        return next(filter(lambda user: user.id == Snowflake(id), self.users), None)
+    
+    def get_message(self, id: Snowflake) -> "Message":
+        """
+            This function is used to get a message.
+        """
+        return next(filter(lambda message: message.id == Snowflake(id), self.messages), None)
+
+    def get_voice_state(self, id: Snowflake) -> "Voicestate":
+        """
+            This function is used to get a voice state.
+        """
+        return next(filter(lambda voice_state: voice_state.user_id == Snowflake(id), self.voice_states), None)

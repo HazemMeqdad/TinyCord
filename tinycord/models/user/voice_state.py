@@ -8,7 +8,7 @@ from ..mixins import Hashable
 from ...utils import Snowflake
 
 @dataclasses.dataclass(repr=False)
-class Voicestate(Hashable):
+class Voicestate:
     """
         This is the VoiceState it used to represent a voice state.
 

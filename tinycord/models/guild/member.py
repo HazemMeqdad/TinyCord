@@ -6,9 +6,10 @@ if typing.TYPE_CHECKING:
 
 from ..mixins import Hashable
 from ...utils import Snowflake
+from ..user import User
 
 @dataclasses.dataclass(repr=False)
-class Member(Hashable):
+class Member(User, Hashable):
     """
         The member is a part from a guild.
         It's basically a member from a guild.
@@ -37,6 +38,7 @@ class Member(Hashable):
             Whether the member is muted or not.
     """
     def __init__(self, client: "Client", guild_id: Snowflake , **data) -> None:
+
         self.client = client
         """The main client."""
 
@@ -61,3 +63,5 @@ class Member(Hashable):
 
         self.mute: bool = data.get('mute')
         """Whether the member is muted or not."""
+
+        super().__init__(client, **data.get('user'))

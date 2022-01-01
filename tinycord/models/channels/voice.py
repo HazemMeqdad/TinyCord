@@ -39,7 +39,7 @@ class VoiceChannel(BaseChannel,Hashable):
         self.rtc_region: str = data.get('rtc_region')
         """The region of the channel."""
 
-        super(BaseChannel, self).__init__(client, guild_id, **data)
+        super().__init__(client, guild_id, **data)
         """The base channel."""
 
         

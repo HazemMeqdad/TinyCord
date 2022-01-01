@@ -61,7 +61,7 @@ class TextChannel(BaseChannel,Hashable):
         self.last_pin_timestamp: str = data.get('last_pin_timestamp')
         """The timestamp of the last pin."""
 
-        super(BaseChannel, self).__init__(client, guild_id, **data)
+        super().__init__(client, guild_id, **data)
         """The base channel."""
 
         

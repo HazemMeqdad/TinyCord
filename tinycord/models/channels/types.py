@@ -1,7 +1,9 @@
-from enum import Enum
+from enum import IntEnum, unique
+import typing
 from ..mixins import EnumMixin
 
-class Channeltypes(Enum, EnumMixin):
+@unique
+class Channeltypes(EnumMixin, IntEnum):
     """
         This is the channel types enum.
     """
@@ -17,9 +19,21 @@ class Channeltypes(Enum, EnumMixin):
     GUILD_PRIVATE_THREAD = 12
     GUILD_STAGE_VOICE = 13
 
-class Permissionoverwritetypes(Enum, EnumMixin):
+@unique
+class Permissionoverwritetypes(EnumMixin, IntEnum):
     """
         This is the permission overwrite types enum.
     """
     ROLE = 0
     MEMBER = 1
+
+if typing.TYPE_CHECKING:
+    from . import TextChannel, VoiceChannel, NewsChannel, DMChannel, StageChannel
+
+All = typing.Union[
+    "TextChannel",
+    "VoiceChannel",
+    "NewsChannel",
+    "DMChannel",
+    "StageChannel",
+]

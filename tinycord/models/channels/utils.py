@@ -3,8 +3,9 @@ from .dm import DMChannel
 from .news import NewsChannel
 from .text import TextChannel
 from .voice import VoiceChannel
+from ...utils import Snowflake
 
-def deserialize_channel(client, guild_id, data):
+def deserialize_channel(client, **data):
     """
     This is the deserialize_channel function.
     
@@ -21,6 +22,7 @@ def deserialize_channel(client, guild_id, data):
     -------
         Channel
     """
+    guild_id = Snowflake(data.get('guild_id'))
     if data['type'] == 0:
         return TextChannel(client, guild_id, **data)
     elif data['type'] == 2:

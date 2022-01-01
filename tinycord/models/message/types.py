@@ -1,7 +1,7 @@
-from enum import Enum
+from enum import IntEnum
 from ..mixins import EnumMixin
 
-class Messagetypes(Enum, EnumMixin):
+class Messagetypes(EnumMixin, IntEnum):
     """
     The message type.
     """

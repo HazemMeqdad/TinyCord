@@ -39,7 +39,7 @@ class NewsChannel(BaseChannel,Hashable):
         self.default_auto_archive_duration: int = data.get('default_auto_archive_duration')
         """The default auto archive duration."""
         
-        super(BaseChannel, self).__init__(client, guild_id, **data)
+        super().__init__(client, guild_id, **data)
         """The base channel."""
 
         
