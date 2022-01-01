@@ -11,11 +11,7 @@ async def guild_role_update(client: "Client", gateway: "Gateway", event: "Gatewa
     guild = client.get_guild(after.guild_id)
     before = guild.get_role(after.id)
 
-    try:
-        guild.roles.remove(before)
-        guild.roles.append(after)
-    except:
-        pass
+    guild.roles[str(after.id)] = after
 
     return "on_role_update", [
         guild, before, after 

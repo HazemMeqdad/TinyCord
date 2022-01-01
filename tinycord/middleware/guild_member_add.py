@@ -10,7 +10,7 @@ async def guild_member_add(client: "Client", gateway: "Gateway", event: "Gateway
     member = Member(client, **event.data)
     guild = client.get_guild(member.guild_id)
 
-    guild.members.append(member)
+    guild.members[str(member.id)] = member
 
     return "on_member_create", [
         guild, member

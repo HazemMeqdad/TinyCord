@@ -6,12 +6,12 @@ if typing.TYPE_CHECKING:
 
 from ..models import Message
     
-async def message_update(client: "Client", gateway: "Gateway", event: "GatewayDispatch") -> typing.List[typing.Awaitable]:
+async def message_delete(client: "Client", gateway: "Gateway", event: "GatewayDispatch") -> typing.List[typing.Awaitable]:
     message = client.get_message(event.data['id'])
 
     try:
-        client.messages.remove(message)
-    except:
+        del client.messages[str(message.id)]
+    except KeyError:
         pass
     
     return "on_message_delete", [
@@ -19,4 +19,4 @@ async def message_update(client: "Client", gateway: "Gateway", event: "GatewayDi
     ]
 
 def export():
-    return message_update
+    return message_delete

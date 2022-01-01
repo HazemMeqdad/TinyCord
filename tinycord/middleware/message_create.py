@@ -9,7 +9,7 @@ from ..models import Message
 async def message_create(client: "Client", gateway: "Gateway", event: "GatewayDispatch") -> typing.List[typing.Awaitable]:
     message = Message(client, **event.data)
 
-    client.messages.append(message)
+    client.messages[str(message.id)] = message
     
     return "on_message", [
         message

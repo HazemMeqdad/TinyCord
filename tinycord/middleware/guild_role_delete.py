@@ -9,8 +9,8 @@ async def guild_role_delete(client: "Client", gateway: "Gateway", event: "Gatewa
     role = guild.get_role(event.data["role_id"])
 
     try:
-        guild.roles.remove(role)
-    except:
+        del guild.roles[str(role.id)]
+    except KeyError:
         pass
 
     return "on_role_delete", [

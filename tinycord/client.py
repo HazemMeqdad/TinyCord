@@ -85,11 +85,10 @@ class Client:
         self.loop: asyncio.AbstractEventLoop = asyncio.get_event_loop()
         self.http = HTTPClient(self)
 
-        self.messages: typing.List["Message"] = []
-        self.guilds: typing.List["Guild"] = []
-        self.channels: typing.List["All"] = []
-        self.users: typing.List["User"] = []
-        self.voice_states: typing.List["Voicestate"] = []
+        self.messages: typing.Dict[str, "Message"] = {}
+        self.guilds: typing.Dict[str, "Guild"] = {}
+        self.channels: typing.Dict[str, "All"] = {}
+        self.users: typing.Dict[str, "User"] = {}
 
     @classmethod
     def event(cls, func: typing.Callable) -> typing.Union[typing.Callable, typing.Awaitable]:
@@ -210,28 +209,22 @@ class Client:
         """
             This function is used to get a guild.
         """
-        return next(filter(lambda guild: guild.id == Snowflake(id), self.guilds), None)
+        return self.guilds.get(str(id), None)
 
     def get_channel(self, id: Snowflake) -> "All":
         """
             This function is used to get a channel.
         """
-        return next(filter(lambda channel: channel.id == Snowflake(id), self.channels), None)
+        return self.channels.get(str(id), None)
 
     def get_user(self, id: Snowflake) -> "User":
         """
             This function is used to get a user.
         """
-        return next(filter(lambda user: user.id == Snowflake(id), self.users), None)
-    
+        return  self.users.get(str(id), None)
+
     def get_message(self, id: Snowflake) -> "Message":
         """
             This function is used to get a message.
         """
-        return next(filter(lambda message: message.id == Snowflake(id), self.messages), None)
-
-    def get_voice_state(self, id: Snowflake) -> "Voicestate":
-        """
-            This function is used to get a voice state.
-        """
-        return next(filter(lambda voice_state: voice_state.user_id == Snowflake(id), self.voice_states), None)
+        return self.messages.get(str(id), None)

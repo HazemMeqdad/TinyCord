@@ -10,6 +10,8 @@ async def user_update(client: "Client", gateway: "Gateway", event: "GatewayDispa
     after = User(client, **event.data['user'])
     before = client.get_user(after.id)
 
+    client.users[str(after.id)] = after
+
     return "on_user_update", [
         before, after
     ]

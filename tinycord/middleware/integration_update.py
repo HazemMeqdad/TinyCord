@@ -11,11 +11,7 @@ async def integration_update(client: "Client", gateway: "Gateway", event: "Gatew
     guild = client.get_guild(event.data['guild_id'])
     before = guild.get_integration(after.id)
 
-    try:
-        guild.integrations.remove(before)
-        guild.integrations.append(after)
-    except:
-        pass
+    guild.integrations[str(after.id)] = after
 
     return "on_integration_update", [
         guild, before, after

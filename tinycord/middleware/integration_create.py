@@ -10,7 +10,7 @@ async def integration_create(client: "Client", gateway: "Gateway", event: "Gatew
     integration = Integration(client, **event.data)
     guild = client.get_guild(event.data['guild_id'])
 
-    guild.integrations.append(integration)
+    guild.integrations[str(integration.id)] = id
 
     return "on_integration_create", [
         guild, integration

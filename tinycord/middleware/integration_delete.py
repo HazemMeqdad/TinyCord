@@ -11,8 +11,8 @@ async def integration_delete(client: "Client", gateway: "Gateway", event: "Gatew
     integration = guild.get_integration(event.data['id'])
 
     try:
-        guild.integrations.remove(integration)
-    except:
+        del guild.integrations[str(integration.id)]
+    except KeyError:
         pass
 
     return "on_integration_delete", [

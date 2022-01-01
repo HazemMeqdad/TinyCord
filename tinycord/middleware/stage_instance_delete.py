@@ -10,14 +10,9 @@ async def stage_create(client: "Client", gateway: "Gateway", event: "GatewayDisp
     guild = client.get_guild(event.data['guild_id'])
     stage = client.get_channel(event.data['id'])
 
-    for channel in guild.channels:
-        if channel.id == stage.id:
-            guild.channels.remove(channel)
-        
-    for channel in client.channels:
-        if channel.id == stage.id:
-            client.channels.remove(channel)
-
+    del client.channels[str(stage.id)]
+    del guild.channels[str(stage.id)]
+    
     return "on_stage_delete", [
         guild, stage
     ]

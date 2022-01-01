@@ -11,11 +11,7 @@ async def guild_member_update(client: "Client", gateway: "Gateway", event: "Gate
     guild = client.get_guild(after.guild_id)
     before = guild.get_member(after.id)
 
-    try:
-        guild.members.remove(before)
-        guild.members.append(after)
-    except:
-        pass
+    guild.members[str(after.id)] = after
 
     return "on_member_update", [
         guild, before, after

@@ -10,7 +10,7 @@ async def guild_role_create(client: "Client", gateway: "Gateway", event: "Gatewa
     role = Role(client, **event.data)
     guild = client.get_guild(role.guild_id)
 
-    guild.roles.append(role)
+    guild.roles[str(role.id)] = role
 
     return "on_role_create", [
         guild, role 

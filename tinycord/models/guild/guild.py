@@ -177,37 +177,36 @@ class Guild(Hashable):
             data.get('embed_channel_id'))
         """The ID of the embed channel."""
 
-        self.channels: typing.List["All"] = [
-            deserialize_channel(self.client, **channel) for channel in data.get('channels', [])
-        ]
+        self.channels: typing.Dict[str, "All"] = {
+            channel['id'] : deserialize_channel(self.client, **channel) for channel in data.get('channels', [])}
         """The channels of the guild."""
         
-        self.threads: typing.List["TextChannel"] = [
-            TextChannel(self.client, self.id , channel) for channel in data.get('threads', [])
-        ]
+        self.threads: typing.Dict[str, "TextChannel"] = {
+            channel['id'] : TextChannel(self.client, self.id , channel) for channel in data.get('threads', [])}
+        """The threads of the guild."""
 
-        self.roles: typing.List["Role"] = [
-            Role(client, self.id, **role) for role in data.get('roles')]
+        self.roles: typing.List[str, "Role"] = {
+            role['id'] : Role(client, self.id, **role) for role in data.get('roles')}
         """The roles of the guild."""
         
-        self.emojis: typing.List["Emoji"] = [
-            Emoji(client, self.id, **emoji) for emoji in data.get('emojis')]
+        self.emojis: typing.Dict[str, "Emoji"] = {
+            emoji['id'] : Emoji(client, self.id, **emoji) for emoji in data.get('emojis')}
         """The emojis of the guild."""
         
-        self.stickers: typing.List["Sticker"] = [
-            Sticker(client, self.id, **sticker) for sticker in data.get('stickers')]
+        self.stickers: typing.Dict[str, "Sticker"] = {
+            sticker['id'] : Sticker(client, self.id, **sticker) for sticker in data.get('stickers')}
         """The stickers of the guild."""
 
-        self.members: typing.List["Member"] = [
-            Member(client, self.id, **member) for member in data.get('members')]
+        self.members: typing.Dict[str, "Member"] = {
+            member['user']['id'] : Member(client, self.id, **member) for member in data.get('members')}
         """The members of the guild."""
 
-        self.users: typing.List["User"] = [
-            User(client, **user['user']) for user in data.get('members')]
+        self.users: typing.Dict[str, "User"] = {
+           user['user']['id'] : User(client, **user['user']) for user in data.get('members')}
         """The users of the guild."""
 
-        self.voice_states: typing.List["Voicestate"] = [
-            Voicestate(client, self.id, **voice_state) for voice_state in data.get('voice_states')]
+        self.voice_states: typing.Dict[str, "Voicestate"] = {
+            voice_state['user']['id'] : Voicestate(client, self.id, **voice_state) for voice_state in data.get('voice_states')}
         """The voice states of the guild."""
         
         self.features: typing.List[str] = data.get('features')
@@ -294,7 +293,7 @@ class Guild(Hashable):
         self.premium_progress_bar_enabled: typing.Union[bool, None] = data.get('premium_progress_bar_enabled')
         """Whether the guild has the premium progress bar enabled or not."""
 
-        self.integrations: typing.List["Integration"] = []
+        self.integrations: typing.List["Integration"] = {}
         """The integrations of the guild."""
 
     # Get methods
@@ -304,7 +303,7 @@ class Guild(Hashable):
 
         Parameters
         ----------
-        id : :class:`snowflakes.Snowflake`
+        id : :class:`Snowflake`
             The ID of the role.
 
         Returns
@@ -313,14 +312,14 @@ class Guild(Hashable):
             The role of the guild.
         """
 
-        return next(filter(lambda role: role.id == Snowflake(id), self.roles), None)
+        return self.roles.get(str(id), None)
 
     def get_emoji(self, id: Snowflake) -> typing.Union["Emoji", None]:
         """Get an emoji of the guild.
 
         Parameters
         ----------
-        id : :class:`snowflakes.Snowflake`
+        id : :class:`Snowflake`
             The ID of the emoji.
 
         Returns
@@ -329,14 +328,14 @@ class Guild(Hashable):
             The emoji of the guild.
         """
 
-        return next(filter(lambda emoji: emoji.id == Snowflake(id), self.emojis), None)
+        return self.emojis.get(str(id), None)
 
     def get_member(self, id: Snowflake) -> typing.Union["Member", None]:
         """Get a member of the guild.
 
         Parameters
         ----------
-        id : :class:`snowflakes.Snowflake`
+        id : :class:`Snowflake`
             The ID of the member.
 
         Returns
@@ -345,14 +344,14 @@ class Guild(Hashable):
             The member of the guild.
         """
 
-        return next(filter(lambda member: member.id == Snowflake(id), self.members), None)
+        return self.members.get(str(id), None)
 
     def get_user(self, id: Snowflake) -> typing.Union["User", None]:
         """Get a user of the guild.
 
         Parameters
         ----------
-        id : :class:`snowflakes.Snowflake`
+        id : :class:`Snowflake`
             The ID of the user.
 
         Returns
@@ -361,14 +360,14 @@ class Guild(Hashable):
             The user of the guild.
         """
 
-        return next(filter(lambda user: user.id == Snowflake(id), self.users), None)
+        return self.users.get(str(id), None)
 
     def get_channel(self, id: Snowflake) -> typing.Union["All", None]:
         """Get a channel of the guild.
 
         Parameters
         ----------
-        id : :class:`snowflakes.Snowflake`
+        id : :class:`Snowflake`
             The ID of the channel.
 
         Returns
@@ -377,14 +376,14 @@ class Guild(Hashable):
             The channel of the guild.
         """
 
-        return next(filter(lambda channel: channel.id == Snowflake(id), self.channels), None)
+        return self.channels.get(str(id), None)
 
     def get_thread(self, id: Snowflake) -> typing.Union["TextChannel", None]:
         """Get a thread of the guild.
 
         Parameters
         ----------
-        id : :class:`snowflakes.Snowflake`
+        id : :class:`Snowflake`
             The ID of the thread.
 
         Returns
@@ -393,14 +392,14 @@ class Guild(Hashable):
             The thread of the guild.
         """
 
-        return next(filter(lambda thread: thread.id == Snowflake(id), self.threads), None)
+        return self.threads.get(str(id), None)
 
     def get_integration(self, id: Snowflake) -> typing.Union["Integration", None]:
         """Get an integration of the guild.
 
         Parameters
         ----------
-        id : :class:`snowflakes.Snowflake`
+        id : :class:`Snowflake`
             The ID of the integration.
 
         Returns
@@ -409,4 +408,11 @@ class Guild(Hashable):
             The integration of the guild.
         """
 
-        return next(filter(lambda integration: integration.id == Snowflake(id), self.integrations), None)
+        return self.integrations.get(str(id), None)
+
+    def get_voice_state(self, id: Snowflake) -> typing.Union["Voicestate", None]:
+        """
+            
+        """
+
+        return self.voice_states.get(str(id), None)

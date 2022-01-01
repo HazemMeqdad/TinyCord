@@ -9,13 +9,13 @@ from ..models import Guild
 async def guild_create(client: "Client", gateway: "Gateway", event: "GatewayDispatch") -> typing.List[typing.Awaitable]:
     guild = Guild(client, **event.data)
 
-    for channel in guild.channels:
-        client.channels.append(channel)
+    for id, channel in guild.channels.items():
+        client.channels[id] = channel
+        
+    for id, user in guild.users.items():
+        client.users[id] = user
 
-    for user in guild.users:
-        client.users.append(user)
-
-    client.guilds.append(guild)
+    client.guilds[str(guild.id)] = guild
 
     if guild.id in client.unavailable_guilds:
         client.unavailable_guilds.remove(guild.id)

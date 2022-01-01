@@ -10,8 +10,8 @@ async def stage_create(client: "Client", gateway: "Gateway", event: "GatewayDisp
     stage = StageChannel(client, **event.data['channel'])
     guild = client.get_guild(stage.guild_id)
 
-    guild.channels.append(stage)
-    client.channels.append(stage)
+    guild.channels[str(stage.id)] = stage
+    client.channels[str(stage.id)] = stage
 
     return "on_stage_create", [
         guild, stage

@@ -10,8 +10,8 @@ async def channel_create(client: "Client", gateway: "Gateway", event: "GatewayDi
     channel = deserialize_channel(client, **event.data)
     guild = client.get_guild(channel.guild_id)
     
-    client.channels.append(channel)
-    guild.channels.append(channel)
+    client.channels[str(channel.id)] = channel
+    guild.channels[str(channel.id)] = channel
 
     return "on_channel_create", [
         guild, channel

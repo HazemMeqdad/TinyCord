@@ -9,14 +9,9 @@ async def channel_delete(client: "Client", gateway: "Gateway", event: "GatewayDi
     guild = client.get_guild(channel.guild_id)
 
     try:
-        for channel in client.channels:
-            if channel.id == channel.id:
-                client.channels.remove(channel)
-
-        for channel in guild.channels:
-            if channel.id == channel.id:
-                guild.channels.remove(channel)
-    except:
+        del client.channels[str(channel.id)]
+        del guild.channels[str(channel.id)]
+    except KeyError:
         pass
 
     return "on_channel_delete", [

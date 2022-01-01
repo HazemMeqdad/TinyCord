@@ -10,8 +10,8 @@ async def on_member_delete(client: "Client", gateway: "Gateway", event: "Gateway
     member = guild.get_member(event.data["user"]["id"])
 
     try:
-        guild.members.remove(member)
-    except:
+        del guild.members[str(member.id)]
+    except KeyError:
         pass
 
     return "on_member_delete", [

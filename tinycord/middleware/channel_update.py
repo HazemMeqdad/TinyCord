@@ -12,21 +12,8 @@ async def channel_update(client: "Client", gateway: "Gateway", event: "GatewayDi
     before = client.get_channel(after.id)
     guild = client.get_guild(after.guild_id)
     
-    try:
-
-        for channel in guild.channels:
-            if channel.id == after.id:
-                guild.channels.remove(channel)
-
-        for channel in client.channels:
-            if channel.id == after.id:
-                client.channels.remove(channel)
-            
-        guild.channels.append(after)
-        client.channels.append(after)
-        
-    except:
-        pass
+    client.channels[str(after.id)] = after
+    guild.channels[str(after.id)] = after
 
     return "on_channel_update", [
         guild, before, after
