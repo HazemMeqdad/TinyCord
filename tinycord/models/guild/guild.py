@@ -298,6 +298,8 @@ class Guild(Hashable):
         self.integrations: typing.List["Integration"] = {}
         """The integrations of the guild."""
 
+        self.voice_server: typing.Dict[str, str] = None
+
     # Get methods
     
     def get_role(self, id: Snowflake) -> typing.Union["Role", None]:
