@@ -59,7 +59,7 @@ client.connect_autosharded()
 first let's finish the lib LOL.
 
 # Discord
-### Our discord server
+
 [![Tinycord Server](https://discord.com/api/guilds/923934645618376704/widget.png?style=banner2)](https://discord.gg/QP3CJythPh)
 
 
@@ -69,8 +69,5 @@ first let's finish the lib LOL.
 # Note
 #### Right Now the lib is in huge development we want to add more things to it like interactions and good event handling
 
-<br>
-
 # Maintainers
 xArty#9065
-
