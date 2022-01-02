@@ -28,9 +28,16 @@ class GatewayDispatch:
         event: str,
     ) -> None:
         self.op = op
+        """ The opcode of the message. """
+
         self.data = data
+        """ The data that comes from the websocket. """
+
         self.seq = seq
+        """ The sequence of the message. """
+
         self.event = event
+        """ The event that is being called. """
 
     @classmethod
     def form(cls, payload: str) -> typing.Dict[str,typing.Any]:
@@ -38,6 +45,7 @@ class GatewayDispatch:
             Parase the data and make it json
         """
         json: typing.Dict[str,typing.Any] = loads(payload)
+        """ The data that comes from the websocket. """
         
         return cls(
             int(json["op"]),
@@ -45,6 +53,7 @@ class GatewayDispatch:
             json["s"],
             json["t"],
         )
+        """ The opcode of the message. """
 
     def __repr__(self) -> str:
         return f"<GatewayDispatch op={self.op} event={self.event}>"

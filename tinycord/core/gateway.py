@@ -32,14 +32,28 @@ class Gateway:
         reconnect: bool = True,
     ) -> None:
         self.token = token
+        """ The token of the bot """
+
         self.intents = intents
+        """ The intents of the bot """
+
         self.url = url
+        """ The url of the gateway """
+
         self.shard_id = shard_id
+        """ The shard id of the bot """
+
         self.shard_count = shard_count
+        """ The shard count of the bot """
 
         self.version = version
+        """ The version of the gateway """
+
         self.max_retries = max_retries
+        """ The max retries of the gateway """
+
         self.reconnect = reconnect
+        """ The reconnect of the gateway """
 
         self.__handler: typing.Dict[str, typing.Callable] = {
             7: self.handle_reconnect,
@@ -47,6 +61,8 @@ class Gateway:
             10: self.handle_hello,
             11: self.handle_heartbeat_ack,
         }
+        """ The handler for the opcodes """
+
         self.__errors: typing.Dict[int, typing.Callable] = {
             4000: GatewayError("Unknown Error"),
             4001: GatewayError("Unknown Opcode"),
@@ -63,16 +79,31 @@ class Gateway:
             4013: GatewayError("Invalid Intents"),
             4014: GatewayError("Disallowed Intents"),
         }
+        """ The error handler for the opcodes """
 
         self.session: aiohttp.ClientSession = aiohttp.ClientSession()
+        """ The session of the gateway """
+
         self.buffer: bytearray = bytearray()
+        """ The buffer for the decompression """
+
         self.should_reconnect: bool = False
+        """ The reconnect of the gateway """
+
         self.sequence: int = 0
+        """ The sequence of the gateway """
+
         self.session_id: int = None
+        """ The session id of the gateway """
 
         self.heartbeat_task: typing.Optional[asyncio.Task] = None
+        """ The heartbeat task of the gateway """
+
         self.heartbeat_interval: int = None
+        """ The heartbeat interval of the gateway """
+
         self.heartbeat_ack: bool = False
+        """ The heartbeat ack of the gateway """
 
     def append_handler(self, handlers: typing.Dict[int, typing.Callable]) -> None:
         """

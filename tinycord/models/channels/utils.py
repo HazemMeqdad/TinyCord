@@ -4,6 +4,7 @@ from .news import NewsChannel
 from .text import TextChannel
 from .voice import VoiceChannel
 from ...utils import Snowflake
+from .thread import ThreadChannel
 
 def deserialize_channel(client, **data):
     """
@@ -31,5 +32,7 @@ def deserialize_channel(client, **data):
         return NewsChannel(client, guild_id, **data)
     elif data['type'] == 5:
         return DMChannel(client, guild_id, **data)
+    elif data['type'] == 11:
+        return ThreadChannel(client, guild_id, **data)
     else:
         return BaseChannel(client, guild_id, **data)

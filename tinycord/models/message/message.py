@@ -7,6 +7,7 @@ if typing.TYPE_CHECKING:
 from ..mixins import Hashable
 from ...utils import Snowflake
 from ..user import User
+from .reaction import Reaction
 
 @dataclasses.dataclass(repr=False)
 class Message(Hashable):
@@ -70,7 +71,8 @@ class Message(Hashable):
         self.embeds: typing.List = data.get('embeds')
         """The embeds of the message."""
 
-        self.reactions: typing.List = data.get('reactions', [])
+        self.reactions: typing.Dict[str, "Reaction"] = {
+            reaction['emoji']['id'] : Reaction(client, **reaction) for reaction in data.get('reactions', {})}
         """The reactions of the message."""
 
         self.nonce: typing.Union[int, str] = data.get('nonce', [])
@@ -116,3 +118,19 @@ class Message(Hashable):
         
         self.stickers: typing.Union[str, None] = data.get('stickers', [])
         """The stickers of the message."""
+
+    def get_reaction(self, emoji_id: Snowflake) -> Reaction:
+        """
+            Get the reaction of the message.
+
+            Parameters
+            ----------
+            emoji : `str`
+                The emoji of the reaction.
+
+            Returns
+            -------
+            `Reaction`
+                The reaction of the message.
+        """
+        return self.reactions.get(str(emoji_id), None)

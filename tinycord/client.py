@@ -78,17 +78,40 @@ class Client:
         reconnect: bool = True,
     ) -> None:
         self.token = f'Bot {token}' if bot is True else token
+        """ The token of the bot. """
+
         self.intents = sum([int(i) for i in intents])
+        """ The intents of the bot. """
+
         self.bot = bot
+        """ Whether the bot is a bot or not. """
+
         self.reconnect = reconnect
+        """ Whether the bot should reconnect or not. """
 
         self.loop: asyncio.AbstractEventLoop = asyncio.get_event_loop()
+        """ The event loop of the bot. """
+
         self.http = HTTPClient(self)
+        """ The HTTP client of the bot. """
+
+        self.user: "User" = None
+        """ The user of the bot. """
 
         self.messages: typing.Dict[str, "Message"] = {}
+        """ The messages of the bot. """
+
         self.guilds: typing.Dict[str, "Guild"] = {}
+        """ The guilds of the bot. """
+
         self.channels: typing.Dict[str, "All"] = {}
+        """ The channels of the bot. """
+
+        self.threads: typing.Dict[str, "ThreadChannel"] = {}
+        """ The threads of the bot. """
+
         self.users: typing.Dict[str, "User"] = {}
+        """ The users of the bot. """
 
     @classmethod
     def event(cls, func: typing.Callable) -> typing.Union[typing.Callable, typing.Awaitable]:
@@ -216,6 +239,12 @@ class Client:
             This function is used to get a channel.
         """
         return self.channels.get(str(id), None)
+
+    def get_thread(self, id: Snowflake) -> "ThreadChannel":
+        """
+            This function is used to get a thread.
+        """
+        return self.threads.get(str(id), None)
 
     def get_user(self, id: Snowflake) -> "User":
         """

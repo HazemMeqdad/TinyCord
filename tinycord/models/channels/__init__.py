@@ -6,6 +6,9 @@ from .voice import VoiceChannel
 from .types import Channeltypes
 from .stage import StageChannel
 from .news import NewsChannel
+from .thread import ThreadChannel
+
+from .invite import Invite
 
 from .utils import deserialize_channel
 from .types import All

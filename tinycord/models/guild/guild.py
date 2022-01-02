@@ -11,7 +11,7 @@ from ...utils import Snowflake
 from .role import Role
 from .emoji import Emoji
 from .sticker import Sticker
-from ..channels import deserialize_channel, TextChannel, All
+from ..channels import deserialize_channel, ThreadChannel, All
 from .member import Member
 from ..user import User, Voicestate
 
@@ -181,8 +181,8 @@ class Guild(Hashable):
             channel['id'] : deserialize_channel(self.client, **channel) for channel in data.get('channels', [])}
         """The channels of the guild."""
         
-        self.threads: typing.Dict[str, "TextChannel"] = {
-            channel['id'] : TextChannel(self.client, self.id , channel) for channel in data.get('threads', [])}
+        self.threads: typing.Dict[str, "ThreadChannel"] = {
+            channel['id'] : ThreadChannel(self.client, self.id , channel) for channel in data.get('threads', [])}
         """The threads of the guild."""
 
         self.roles: typing.List[str, "Role"] = {
@@ -378,7 +378,7 @@ class Guild(Hashable):
 
         return self.channels.get(str(id), None)
 
-    def get_thread(self, id: Snowflake) -> typing.Union["TextChannel", None]:
+    def get_thread(self, id: Snowflake) -> typing.Union["ThreadChannel", None]:
         """Get a thread of the guild.
 
         Parameters

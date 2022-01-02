@@ -48,7 +48,7 @@ class HTTPClient:
             **kwargs,
         ) as response:
             if response.status == 429:
-                await self.ratelimit(response.headers['Retry-After'])
+                await self.ratelimit(response.headers['Retry-After'], url, method, **kwargs)
             return await response.json()
 
     async def ratelimit(self, retry_after: float, url: str, method: str, **kwargs):
