@@ -130,10 +130,9 @@ class Client:
             This function is used to register an event.
             This is used to register events that are called after the event is called.
         """
-        print(cls)
 
         def decorator(func: typing.Callable):
-            events[event] = func
+            events[event] = 'on_' + event
 
             return func
         return decorator
@@ -226,34 +225,66 @@ class Client:
         if callback != None:
             await callback(*args)
 
-    # Get methods
+    def get_user(self, id: Snowflake) -> typing.Union["User", None]:
+        """Get a user of the guild.
 
-    def get_guild(self, id: Snowflake) -> "Guild":
-        """
-            This function is used to get a guild.
-        """
-        return self.guilds.get(str(id), None)
+        Parameters
+        ----------
+        id : :class:`Snowflake`
+            The ID of the user.
 
-    def get_channel(self, id: Snowflake) -> "All":
+        Returns
+        -------
+        :class:`User`
+            The user of the guild.
         """
-            This function is used to get a channel.
+
+        return self.users.get(str(id), None)
+
+    def get_channel(self, id: Snowflake) -> typing.Union["All", None]:
+        """Get a channel of the guild.
+
+        Parameters
+        ----------
+        id : :class:`Snowflake`
+            The ID of the channel.
+
+        Returns
+        -------
+        :class:`All`
+            The channel of the guild.
         """
+
         return self.channels.get(str(id), None)
 
-    def get_thread(self, id: Snowflake) -> "ThreadChannel":
+    def get_thread(self, id: Snowflake) -> typing.Union["ThreadChannel", None]:
+        """Get a thread of the guild.
+
+        Parameters
+        ----------
+        id : :class:`Snowflake`
+            The ID of the thread.
+
+        Returns
+        -------
+        :class:`TextChannel`
+            The thread of the guild.
         """
-            This function is used to get a thread.
-        """
+
         return self.threads.get(str(id), None)
 
-    def get_user(self, id: Snowflake) -> "User":
-        """
-            This function is used to get a user.
-        """
-        return  self.users.get(str(id), None)
+    def get_message(self, id: Snowflake) -> typing.Union["Message", None]:
+        """Get a message of the guild.
 
-    def get_message(self, id: Snowflake) -> "Message":
+        Parameters
+        ----------
+        id : :class:`Snowflake`
+            The ID of the message.
+
+        Returns
+        -------
+        :class:`Message`
+            The message of the guild.
         """
-            This function is used to get a message.
-        """
+
         return self.messages.get(str(id), None)
