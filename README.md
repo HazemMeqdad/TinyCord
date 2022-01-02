@@ -59,7 +59,7 @@ client.connect_autosharded()
 first let's finish the lib LOL.
 
 # Discord
-
+### Our discord server
 [![Tinycord Server](https://discord.com/api/guilds/923934645618376704/widget.png?style=banner2)](https://discord.gg/QP3CJythPh)
 
 

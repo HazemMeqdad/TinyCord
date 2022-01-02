@@ -132,7 +132,7 @@ class Client:
         """
 
         def decorator(func: typing.Callable):
-            events[event] = 'on_' + event
+            events[event] = func
 
             return func
         return decorator
