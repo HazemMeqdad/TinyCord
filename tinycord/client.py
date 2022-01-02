@@ -225,6 +225,22 @@ class Client:
         if callback != None:
             await callback(*args)
 
+    def get_guild(self, guild_id: str) -> "Guild":
+        """Get a guild from the cache.
+
+        Parameters
+        ----------
+        id : :class:`Snowflake`
+            The ID of the guild.
+
+        Returns
+        -------
+        :class:`Guild`
+            The guild.
+        """
+
+        return self.guilds.get(guild_id, None)
+
     def get_user(self, id: Snowflake) -> typing.Union["User", None]:
         """Get a user of the guild.
 

@@ -14,6 +14,7 @@ from .sticker import Sticker
 from ..channels import deserialize_channel, ThreadChannel, All
 from .member import Member
 from ..user import User, Voicestate
+from .scheduled_event import ScheduledEvent
 
 @dataclasses.dataclass(repr=False)
 class Guild(Hashable):
@@ -287,7 +288,8 @@ class Guild(Hashable):
         self.stage_instances: typing.List[str] = data.get('stage_instances')
         """The stage instances of the guild."""
         
-        self.guild_scheduled_events: typing.List[str] = data.get('guild_scheduled_events')
+        self.guild_scheduled_events: typing.Dict[str, "ScheduledEvent"] = {
+            event['id'] : ScheduledEvent(client, self.id, **event) for event in data.get('guild_scheduled_events')}
         """The guild scheduled events of the guild."""
         
         self.premium_progress_bar_enabled: typing.Union[bool, None] = data.get('premium_progress_bar_enabled')
@@ -410,9 +412,35 @@ class Guild(Hashable):
 
         return self.integrations.get(str(id), None)
 
+    def get_scheduled_event(self, id: Snowflake) -> typing.Union["ScheduledEvent", None]:
+        """Get a scheduled event of the guild.
+
+        Parameters
+        ----------
+        id : :class:`Snowflake`
+            The ID of the scheduled event.
+
+        Returns
+        -------
+        :class:`ScheduledEvent`
+            The scheduled event of the guild.
+        """
+
+        return self.guild_scheduled_events.get(str(id), None)
+
     def get_voice_state(self, id: Snowflake) -> typing.Union["Voicestate", None]:
         """
-            
+        Get a voice state of the guild.
+
+        Parameters
+        ----------
+        id : :class:`Snowflake`
+            The ID of the voice state.
+
+        Returns
+        -------
+        :class:`Voicestate`
+            The voice state of the guild.
         """
 
         return self.voice_states.get(str(id), None)

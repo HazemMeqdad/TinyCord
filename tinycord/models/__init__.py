@@ -1,4 +1,4 @@
-from .guild import Guild, Role, Member, Emoji
+from .guild import Guild, Role, Member, Emoji, ScheduledEvent
 from .channels import BaseChannel, DMChannel, TextChannel, VoiceChannel, \
                     NewsChannel, StageChannel, All, deserialize_channel, \
                     Invite, ThreadChannel
