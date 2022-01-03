@@ -29,7 +29,7 @@ async def voice_server_update(client: "Client", gateway: "Gateway", event: "Gate
         guild.voice_server = None
         
 
-    return "on_vocie_server_update", [
+    return "on_voice_server_update", [
         guild, event.data
     ]
     """ The event that was dispatched. """

@@ -8,6 +8,7 @@ import typing
 import logging
 import asyncio
 import logging
+import collections
 
 if typing.TYPE_CHECKING:
     from .intents import Intents
@@ -18,7 +19,7 @@ from .middleware import get_middlewares
 from .utils import Snowflake
 
 logger: logging.Logger = logging.Logger("tinycord")
-events: typing.List[typing.Coroutine] = {}
+events: typing.List[typing.Coroutine] = collections.defaultdict(list)
 
 from rich import print
 
@@ -125,7 +126,7 @@ class Client:
             This is used to register events that are called after the event is called.
         """
 
-        events[func.__name__] = func
+        events[func.__name__].append(func)
 
         return func
 
@@ -137,7 +138,7 @@ class Client:
         """
 
         def decorator(func: typing.Callable):
-            events[event] = func
+            events[event].append(func)
 
             return func
         return decorator
@@ -257,7 +258,8 @@ class Client:
                 if self.is_ready is False:
                     return
                 else:
-                    await callback(*args)
+                    for i in callback:
+                        await i(*args)
 
     def get_guild(self, id: str) -> "Guild":
         """Get a guild from the cache.
