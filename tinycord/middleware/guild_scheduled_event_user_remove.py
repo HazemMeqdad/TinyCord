@@ -31,7 +31,7 @@ async def scheduled_event_user_remove(client: "Client", gateway: "Gateway", even
 
     scheduled_event.user_count -= 1
 
-    return "on_scheduled_event_user_remove", [
+    return "on_scheduled_user_remove", [
         guild, user, scheduled_event
     ]
     """ The event that was dispatched. """

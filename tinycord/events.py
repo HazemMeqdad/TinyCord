@@ -23,6 +23,12 @@ class Events:
     integrationUpdate = 'on_integration_update'
     integrationDelete = 'on_integration_delete'
 
+    scheduledCreate = 'on_scheduled_create'
+    scheduledDelete = 'on_scheduled_delete'
+    scheduledUpdate = 'on_scheduled_update'
+    scheduledUserAdd = 'on_scheduled_user_add'
+    scheduledUserRemove = 'on_scheduled_user_remove'
+
     roleCreate = 'on_role_create'
     roleUpdate = 'on_role_update'
     roleDelete = 'on_role_delete'

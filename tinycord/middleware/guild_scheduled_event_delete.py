@@ -28,7 +28,7 @@ async def scheduled_event_delete(client: "Client", gateway: "Gateway", event: "G
 
     del guild.guild_scheduled_events[str(scheduled_event.id)]
 
-    return "on_scheduled_event_delete", [
+    return "on_scheduled_delete", [
         guild, scheduled_event
     ]
     """ The event that was dispatched. """

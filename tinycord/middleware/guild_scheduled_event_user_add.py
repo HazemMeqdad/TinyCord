@@ -31,7 +31,7 @@ async def scheduled_event_user_add(client: "Client", gateway: "Gateway", event: 
 
     scheduled_event.user_count += 1
 
-    return "on_scheduled_event_user_add", [
+    return "on_scheduled_user_add", [
         guild, user, scheduled_event
     ]
     """ The event that was dispatched. """
