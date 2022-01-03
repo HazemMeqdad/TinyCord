@@ -4,4 +4,5 @@ from .channels import BaseChannel, DMChannel, TextChannel, VoiceChannel, \
                     Invite, ThreadChannel
 from .user import User, Voicestate, Integration
 from .message import Message, ReactionGateway, Reaction
-            
+from .interactions import ApplictionCommand, SlashContext, Option, SelectOption, \
+                    CommandApplictionTypes, ChannelType, Choice, OptionType
