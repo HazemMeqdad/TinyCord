@@ -155,7 +155,8 @@ class Client:
             return await asyncio.wait_for(future, timeout=timeout)
         except asyncio.TimeoutError:
             pass
-
+        
+        del events[event][events[event].index(future)]
         del future
             
     def connect(self) -> None:
@@ -257,6 +258,7 @@ class Client:
             else:
                 if self.is_ready is False:
                     return
+                
                 else:
                     for i in callback:
                         await i(*args)

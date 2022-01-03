@@ -5,7 +5,7 @@ if typing.TYPE_CHECKING:
     from ...client import Client
 
 from ..mixins import Hashable
-from ...utils import Snowflake
+from ...utils import Snowflake, Permission
 
 @dataclasses.dataclass(repr=False)
 class Role(Hashable):
@@ -65,7 +65,8 @@ class Role(Hashable):
         self.position: str = data.get('position')
         """The position of the role."""
 
-        self.permissions: str = data.get('permissions')
+        self.permissions: typing.List[str] = Permission(
+            data.get('permissions')).compute()
         """The permissions of the role."""
 
         self.managed: bool = data.get('managed')
