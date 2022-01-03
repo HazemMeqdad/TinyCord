@@ -39,6 +39,13 @@ async def guild_create(client: "Client", gateway: "Gateway", event: "GatewayDisp
         client.unavailable_guilds.remove(guild.id)
         """ Removing the guild id from the unavailable guilds array. """
 
+        if len(client.unavailable_guilds) == 0:
+            client.is_ready = True
+            
+
+            return "on_ready", [
+            ]
+
         return "on_guild_cache", [
             guild
         ]

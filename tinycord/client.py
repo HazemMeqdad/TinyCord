@@ -20,6 +20,8 @@ from .utils import Snowflake
 logger: logging.Logger = logging.Logger("tinycord")
 events: typing.List[typing.Coroutine] = {}
 
+from rich import print
+
 def middleware_event(event: str):
     """
         This function is used to register a middleware event.
@@ -89,6 +91,9 @@ class Client:
         self.reconnect = reconnect
         """ Whether the bot should reconnect or not. """
 
+        self.is_ready = False
+        """ Whether the bot is ready or not. """
+
         self.loop: asyncio.AbstractEventLoop = asyncio.get_event_loop()
         """ The event loop of the bot. """
 
@@ -137,6 +142,21 @@ class Client:
             return func
         return decorator
 
+    async def wait_for(self, event: str, timeout: int) -> typing.Awaitable:
+        """
+            This function is used to wait for an event.
+        """
+        future = self.loop.create_future()
+
+        self.listen(event)(future)
+
+        try:
+            return await asyncio.wait_for(future, timeout=timeout)
+        except asyncio.TimeoutError:
+            pass
+
+        del future
+            
     def connect(self) -> None:
         """
             This function is used to connect to Discord.
@@ -197,7 +217,11 @@ class Client:
         ware = events.get(event,None)
 
         if ware is not None:
-            extractable = await ware(client, gateway, payload)
+
+            try:
+                extractable = await ware(client, gateway, payload)
+            except:
+                extractable = (None, None)
 
             logger.debug(f"Middleware {event} has been called.")
 
@@ -223,9 +247,19 @@ class Client:
         event, args, callback = await self.handle_middleware(self, self.gw, payload)
         
         if callback != None:
-            await callback(*args)
+            if asyncio.isfuture(callback):
+                if isinstance(callback, asyncio.Future):
+                    if callback.done():
+                        pass
+                    else:
+                        callback.set_result(*args)
+            else:
+                if self.is_ready is False:
+                    return
+                else:
+                    await callback(*args)
 
-    def get_guild(self, guild_id: str) -> "Guild":
+    def get_guild(self, id: str) -> "Guild":
         """Get a guild from the cache.
 
         Parameters
@@ -236,13 +270,13 @@ class Client:
         Returns
         -------
         :class:`Guild`
-            The guild.
+            The guild from the cache.
         """
 
-        return self.guilds.get(guild_id, None)
+        return self.guilds.get(str(id), None)
 
     def get_user(self, id: Snowflake) -> typing.Union["User", None]:
-        """Get a user of the guild.
+        """Get a user from the cache.
 
         Parameters
         ----------
@@ -252,13 +286,13 @@ class Client:
         Returns
         -------
         :class:`User`
-            The user of the guild.
+            The user from the cache.
         """
 
         return self.users.get(str(id), None)
 
     def get_channel(self, id: Snowflake) -> typing.Union["All", None]:
-        """Get a channel of the guild.
+        """Get a channel from the cache
 
         Parameters
         ----------
@@ -268,13 +302,13 @@ class Client:
         Returns
         -------
         :class:`All`
-            The channel of the guild.
+            The channel from the cache.
         """
 
         return self.channels.get(str(id), None)
 
     def get_thread(self, id: Snowflake) -> typing.Union["ThreadChannel", None]:
-        """Get a thread of the guild.
+        """Get a thread from the cache.
 
         Parameters
         ----------
@@ -284,13 +318,13 @@ class Client:
         Returns
         -------
         :class:`TextChannel`
-            The thread of the guild.
+            The thread from the cache.
         """
 
         return self.threads.get(str(id), None)
 
     def get_message(self, id: Snowflake) -> typing.Union["Message", None]:
-        """Get a message of the guild.
+        """Get a message from the cache.
 
         Parameters
         ----------
@@ -300,7 +334,7 @@ class Client:
         Returns
         -------
         :class:`Message`
-            The message of the guild.
+            The message from the cache
         """
 
         return self.messages.get(str(id), None)

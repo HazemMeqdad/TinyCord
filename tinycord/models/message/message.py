@@ -3,6 +3,8 @@ import dataclasses
 
 if typing.TYPE_CHECKING:
     from ...client import Client
+    from ..guild import Guild, Member
+    from ..channels import All
 
 from ..mixins import Hashable
 from ...utils import Snowflake
@@ -37,7 +39,7 @@ class Message(Hashable):
             data.get('guild_id'))
         """The guild id."""
 
-        self.author: "User" = User(client, 
+        self.user: "User" = User(client, 
             **data.get('author'))
         """The author of the message."""
 
@@ -134,3 +136,20 @@ class Message(Hashable):
                 The reaction of the message.
         """
         return self.reactions.get(str(emoji_id), None)
+
+    @property
+    def guild(self) -> typing.Union["Guild", None]:
+        """The guild of the message."""
+
+        return self.client.get_guild(self.guild_id)
+    
+    @property
+    def channel(self) -> typing.Union["All", None]:
+        """The channel of the message."""
+
+        return self.client.get_channel(self.channel_id)
+
+    @property
+    def author(self) -> typing.Union["Member", None]:
+        """The author id of the message."""
+        return self.guild.get_member(self.user.id)

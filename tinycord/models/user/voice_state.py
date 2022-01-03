@@ -3,8 +3,9 @@ import dataclasses
 
 if typing.TYPE_CHECKING:
     from ...client import Client
+    from ..channels import VoiceChannel
+    from ..guild import Guild, Member
 
-from ..mixins import Hashable
 from ...utils import Snowflake
 
 @dataclasses.dataclass(repr=False)
@@ -46,11 +47,11 @@ class Voicestate:
         request_to_speak_timestamp : `typing.Union[int, None]`
             The timestamp of when the user requested to speak.
     """
-    def __init__(self, client: "Client", **data) -> None:
+    def __init__(self, client: "Client", guild_id: Snowflake ,**data) -> None:
         self.client = client
         """The main client."""
         
-        self.guild_id: typing.Union[Snowflake, None] = data.get('guild_id')
+        self.guild_id: typing.Union[Snowflake, None] = Snowflake(guild_id)
         """The guild id."""
 
         self.channel_id: typing.Union[Snowflake, None] = data.get('channel_id')
@@ -85,3 +86,21 @@ class Voicestate:
         
         self.request_to_speak_timestamp: typing.Union[int, None] = data.get('request_to_speak_timestamp')
         """The timestamp of when the user requested to speak."""
+
+    @property
+    def guild(self) -> typing.Union["Guild", None]:
+        """The guild of the voice state."""
+
+        return self.client.get_guild(self.guild_id)
+    
+    @property
+    def channel(self) -> typing.Union["VoiceChannel", None]:
+        """The channel of the voice state."""
+
+        return self.client.get_channel(self.channel_id)
+
+    @property
+    def member(self) -> typing.Union["Member", None]:
+        """The user of the voice state."""
+
+        return self.guild.get_member(self.user_id)

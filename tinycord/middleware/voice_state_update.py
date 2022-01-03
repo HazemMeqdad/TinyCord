@@ -5,6 +5,7 @@ if typing.TYPE_CHECKING:
     from ..core import Gateway, GatewayDispatch
 
 from ..models import Voicestate
+from ..utils import Snowflake
     
 async def voice_state_update(client: "Client", gateway: "Gateway", event: "GatewayDispatch") -> typing.List[typing.Awaitable]:
     """
@@ -21,16 +22,21 @@ async def voice_state_update(client: "Client", gateway: "Gateway", event: "Gatew
         event : `GatewayDispatch`
             The event that was dispatched.
     """
+
+
     after = Voicestate(client, **event.data)
     """ The voice state that was updated. """
 
     guild = client.get_guild(after.guild_id) or None
     """ The guild that the voice state was updated in. """
 
-    before = guild.get_integration(after.user_id)
+    before = guild.get_voice_state(after.user_id)
     """ The voice state that was updated. """
 
-    return "on_vocie_state_update", [
+    guild.voice_states[str(after.user_id)] = after
+    """ Updating the voice state. """
+
+    return "on_voice_state_update", [
         guild, before, after
     ]
     """ The event that was dispatched. """

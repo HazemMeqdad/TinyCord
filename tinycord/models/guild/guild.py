@@ -179,7 +179,7 @@ class Guild(Hashable):
         """The ID of the embed channel."""
 
         self.channels: typing.Dict[str, "All"] = {
-            channel['id'] : deserialize_channel(self.client, **channel) for channel in data.get('channels', [])}
+            channel['id'] : deserialize_channel(self.client, self.id , **channel) for channel in data.get('channels', [])}
         """The channels of the guild."""
         
         self.threads: typing.Dict[str, "ThreadChannel"] = {
@@ -207,7 +207,7 @@ class Guild(Hashable):
         """The users of the guild."""
 
         self.voice_states: typing.Dict[str, "Voicestate"] = {
-            voice_state['user']['id'] : Voicestate(client, self.id, **voice_state) for voice_state in data.get('voice_states')}
+            voice_state['user_id'] : Voicestate(client, self.id , **voice_state) for voice_state in data.get('voice_states')}
         """The voice states of the guild."""
         
         self.features: typing.List[str] = data.get('features')

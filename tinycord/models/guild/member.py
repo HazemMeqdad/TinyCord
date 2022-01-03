@@ -3,6 +3,8 @@ import dataclasses
 
 if typing.TYPE_CHECKING:
     from ...client import Client
+    from ..guild import Guild
+    from ..user import Voicestate
 
 from ..mixins import Hashable
 from ...utils import Snowflake
@@ -65,3 +67,16 @@ class Member(User, Hashable):
         """Whether the member is muted or not."""
 
         super().__init__(client, **data.get('user'))
+
+    @property
+    def guild(self) -> typing.Union["Guild", None]:
+        """The guild of the member."""
+
+        return self.client.get_guild(self.guild_id)
+
+    @property
+    def voice_state(self) -> typing.Union["Voicestate", None]:
+        """The voice state of the member."""
+
+        return self.guild.get_voice_state(self.id)
+        

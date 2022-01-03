@@ -42,4 +42,36 @@ class VoiceChannel(BaseChannel,Hashable):
         super().__init__(client, guild_id, **data)
         """The base channel."""
 
+    async def connect(self, muted: bool = False, deafed: bool = True) -> None:
+        """
+            |coro|
+            Connects to the voice channel.
+
+            Parameters
+            ----------
+            muted : `bool`
+                Whether the bot should be muted or not.
+            deafed : `bool`
+                Whether the bot should be deafed or not.
+        """
+        
+        await self.client.gw.send(4, {
+            'guild_id': self.guild_id,
+            'channel_id': self.id,
+            'self_mute': muted,
+            'self_deaf': deafed,
+        })
+
+    async def disconnect(self) -> None:
+        """
+            |coro|
+            Disconnects from the voice channel.
+        """
+
+        await self.client.gw.send(4, {
+            'guild_id': self.guild_id,
+            'channel_id': None,
+            'self_mute': False,
+            'self_deaf': False,
+        })
         
