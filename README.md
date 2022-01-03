@@ -70,4 +70,5 @@ first let's finish the lib LOL.
 #### Right Now the lib is in huge development we want to add more things to it like interactions and good event handling
 
 # Maintainers
-xArty#9065
+xArty#9065 <br>
+H A Z E M#1629

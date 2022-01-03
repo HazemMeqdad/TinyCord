@@ -8,7 +8,7 @@ class Intents(Enum):
         Example:
         ```py
         client = Client(
-            "OTIzOTM0ODQ1NTAyMTI0MDkz.YcXPYQ.1YyZdC0pykJJ4w8P73VRFvUL1Q8",
+            "token",
             intents=[Intents.GUILDS, Intents.GUILD_MESSAGES]
         )
 
