@@ -1,6 +1,4 @@
-from re import S, U
 import typing
-import asyncio
 
 if typing.TYPE_CHECKING:
     from ..client import Client
@@ -14,7 +12,7 @@ class GuildAPI:
         self.client = client
         """The client."""
 
-    async def guild_get(self, guild_id: str) -> "Guild":
+    async def guild_get(self, guild_id: str):
         """
         Get a guild.
 
@@ -31,7 +29,7 @@ class GuildAPI:
         res =  await self.client.http.request(Router(f'/guilds/{guild_id}', 'GET'))
         return Guild(res)
 
-    async def guild_edit(self, guild_id: str, reason: str = None , **data) -> dict:
+    async def guild_edit(self, guild_id: str, reason: str = None , **data):
         """
         Edit a guild.
 
@@ -46,7 +44,7 @@ class GuildAPI:
         await self.client.http.request(Router(f'/guilds/{guild_id}', 'PATCH'), json=data,
             headers=_reason(reason))
 
-    async def guild_delete(self, guild_id: str) -> dict:
+    async def guild_delete(self, guild_id: str):
         """
         Delete a guild.
 
@@ -58,7 +56,7 @@ class GuildAPI:
         """
         await self.client.http.request(Router(f'/guilds/{guild_id}', 'DELETE'))
 
-    async def guild_create_channel(self, guild_id: str, reason: str = None , **data) -> "All":
+    async def guild_create_channel(self, guild_id: str, reason: str = None , **data):
         """
         Create a channel.
 
@@ -75,7 +73,7 @@ class GuildAPI:
 
         return deserialize_channel(self.client, guild_id, res)
 
-    async def guild_get_channels(self, guild_id: str) -> typing.List["All"]:
+    async def guild_get_channels(self, guild_id: str):
         """
         Get channels.
 
@@ -89,7 +87,7 @@ class GuildAPI:
 
         return [deserialize_channel(self.client, guild_id, channel) for channel in res]
         
-    async def guild_get_roles(self, guild_id: str) -> typing.List["Role"]:
+    async def guild_get_roles(self, guild_id: str):
         """
         Get roles.
 
@@ -103,7 +101,7 @@ class GuildAPI:
 
         return [Role(self.client, guild_id, role) for role in res]
 
-    async def guild_get_members(self, guild_id: str) -> typing.List["Member"]:
+    async def guild_get_members(self, guild_id: str):
         """
         Get members.
 
@@ -117,7 +115,7 @@ class GuildAPI:
 
         return [Member(self.client, guild_id, member) for member in res]
 
-    async def guild_member_edit(self, guild_id: str, user_id: str, reason: str = None , **data) -> "Member":
+    async def guild_member_edit(self, guild_id: str, user_id: str, reason: str = None , **data):
         """
         Edit a member.
 
@@ -136,7 +134,7 @@ class GuildAPI:
 
         return Member(self.client, guild_id, res)
 
-    async def guild_member_add_role(self, guild_id: str, user_id: str, role_id: str, reason: str = None) -> "Member":
+    async def guild_member_add_role(self, guild_id: str, user_id: str, role_id: str, reason: str = None):
         """
         Add a role to a member.
 
@@ -155,7 +153,7 @@ class GuildAPI:
         await self.client.http.request(Router(f'/guilds/{guild_id}/members/{user_id}/roles/{role_id}', 'PUT'),
             headers=_reason(reason))
 
-    async def guild_member_delete_role(self, guild_id: str, user_id: str, role_id: str, reason: str = None) -> "Member":
+    async def guild_member_delete_role(self, guild_id: str, user_id: str, role_id: str, reason: str = None):
         """
         Delete a role from a member.
 
@@ -174,7 +172,7 @@ class GuildAPI:
         await self.client.http.request(Router(f'/guilds/{guild_id}/members/{user_id}/roles/{role_id}', 'DELETE'),
             headers=_reason(reason))
 
-    async def guild_get_bans(self, guild_id: str) -> typing.Dict[str, typing.List[str, "User"]]:
+    async def guild_get_bans(self, guild_id: str):
         """
         Get bans.
 
@@ -188,7 +186,7 @@ class GuildAPI:
 
         return {user['user']['id']: [User(self.client, user['user']), user['reason']] for user in res}
 
-    async def guild_ban_member(self, guild_id: str, user_id: str, delete_message_days: int = None , reason: str = None) -> "User":
+    async def guild_ban_member(self, guild_id: str, user_id: str, delete_message_days: int = None , reason: str = None):
         """
         Ban a member.
 
@@ -206,7 +204,7 @@ class GuildAPI:
             json={'delete_message_days': delete_message_days},
             headers=_reason(reason))
 
-    async def guild_kick_member(self, guild_id: str, user_id: str, reason: str = None) -> "User":
+    async def guild_kick_member(self, guild_id: str, user_id: str, reason: str = None):
         """
         Kick a member.
 
@@ -223,7 +221,7 @@ class GuildAPI:
         await self.client.http.request(Router(f'/guilds/{guild_id}/members/{user_id}', 'DELETE'),
             headers=_reason(reason))
 
-    async def guild_get_ban(self, guild_id: str, user_id: str) -> typing.List[str, "User"]:
+    async def guild_get_ban(self, guild_id: str, user_id: str):
         """
         Get ban.
 
@@ -237,7 +235,7 @@ class GuildAPI:
         """
         res =  await self.client.http.request(Router(f'/guilds/{guild_id}/bans/{user_id}', 'GET'))
 
-        return [User(self.client, res['user']), res['reason']]
+        return [ [User(self.client, res['user']), res['reason']] ]
 
     async def guild_unban(self, guild_id: str, user_id: str, reason: str = None):
         """
@@ -256,7 +254,7 @@ class GuildAPI:
         await self.client.http.request(Router(f'/guilds/{guild_id}/bans/{user_id}', 'DELETE'),
             headers=_reason(reason))
 
-    async def guild_create_role(self, guild_id: str, reason: str = None , **data) -> "Role":
+    async def guild_create_role(self, guild_id: str, reason: str = None , **data):
         """
         Create a role.
 
@@ -273,7 +271,7 @@ class GuildAPI:
 
         return Role(self.client, guild_id, res)
 
-    async def guild_delete_role(self, guild_id: str, role_id: str) -> dict:
+    async def guild_delete_role(self, guild_id: str, role_id: str):
         """
         Delete a role.
 
@@ -287,7 +285,7 @@ class GuildAPI:
         """
         await self.client.http.request(Router(f'/guilds/{guild_id}/roles/{role_id}', 'DELETE'))
 
-    async def guild_edit_role(self, guild_id: str, role_id: str, reason: str = None , **data) -> dict:
+    async def guild_edit_role(self, guild_id: str, role_id: str, reason: str = None , **data):
         """
         Edit a role.
 
@@ -306,7 +304,7 @@ class GuildAPI:
 
         return Role(self.client, guild_id, res)
 
-    async def guild_get_role(self, guild_id: str, role_id: str) -> "Role":
+    async def guild_get_role(self, guild_id: str, role_id: str):
         """
         Get a role.
 
@@ -322,7 +320,7 @@ class GuildAPI:
 
         return Role(self.client, guild_id, res)
 
-    async def guild_create_emoji(self, guild_id: str, reason: str = None , **data) -> dict:
+    async def guild_create_emoji(self, guild_id: str, reason: str = None , **data):
         """
         Create an emoji.
 
@@ -339,7 +337,7 @@ class GuildAPI:
 
         return Emoji(self.client, guild_id, res)
 
-    async def guild_delete_emoji(self, guild_id: str, emoji_id: str) -> dict:
+    async def guild_delete_emoji(self, guild_id: str, emoji_id: str):
         """
         Delete an emoji.
 
@@ -353,7 +351,7 @@ class GuildAPI:
         """
         await self.client.http.request(Router(f'/guilds/{guild_id}/emojis/{emoji_id}', 'DELETE'))
 
-    async def guild_create_sticker(self, guild_id: str, reason: str = None , **data) -> dict:
+    async def guild_create_sticker(self, guild_id: str, reason: str = None , **data):
         """
         Create a sticker.
 
@@ -370,7 +368,7 @@ class GuildAPI:
 
         return Sticker(self.client, guild_id, res)
 
-    async def guild_delete_sticker(self, guild_id: str, sticker_id: str) -> dict:
+    async def guild_delete_sticker(self, guild_id: str, sticker_id: str):
         """
         Delete a sticker.
 
@@ -384,7 +382,7 @@ class GuildAPI:
         """
         await self.client.http.request(Router(f'/guilds/{guild_id}/stickers/{sticker_id}', 'DELETE'))
 
-    async def guild_edit_sticker(self, guild_id: str, sticker_id: str, reason: str = None , **data) -> dict:
+    async def guild_edit_sticker(self, guild_id: str, sticker_id: str, reason: str = None , **data):
         """
         Edit a sticker.
 
@@ -403,7 +401,7 @@ class GuildAPI:
 
         return Sticker(self.client, guild_id, res)
 
-    async def guild_edit_emoji(self, guild_id: str, emoji_id: str, reason: str = None , **data) -> dict:
+    async def guild_edit_emoji(self, guild_id: str, emoji_id: str, reason: str = None , **data):
         """
         Edit an emoji.
 

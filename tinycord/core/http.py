@@ -56,6 +56,8 @@ class HTTPClient:
             for k, v in kwargs['headers'].items():
                 self.headers[k] = v
 
+        kwargs.pop('headers', None)
+
         response = await self.session.request(
             url=route.path,
             method=route.method,

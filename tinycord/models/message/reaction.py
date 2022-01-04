@@ -3,8 +3,6 @@ import typing
 if typing.TYPE_CHECKING:
     from ...client import Client
 
-from ..guild import Emoji
-
 class Reaction:
     """
         This is the Reaction it used to represent a reaction.
@@ -26,6 +24,8 @@ class Reaction:
             The emoji.
     """
     def __init__(self, client: "Client" , **data) -> None:
+        from .. import Emoji
+        
         self.count: int = data.get('count')
         """The count of the reaction."""
 

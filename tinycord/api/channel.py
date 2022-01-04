@@ -115,14 +115,14 @@ class ChannelAPI:
         """
 
         res =  await self.client.http.request(
-            Router(f'/channels/{channel_id}/messages', 'POST'), data=json.dumps({
-            'payload_json': json.dumps(data),
-            'files': data.get('files', [])
-        }))
+            Router(f'/channels/{channel_id}/messages', 'POST'), 
+            data=json.dumps({'payload_json': json.dumps(data),'files': data.get('files', [])}), 
+            headers={'Content-Type': 'application/json'}
+        )
         
-        return Message(self.client, res)
+        return Message(self.client, **res)
 
-    async def channel_messages_delete(self, channel_id: str, message_id: str, reason: str = None) -> dict:
+    async def channel_messages_delete(self, channel_id: str, message_id: str, reason: str = None):
         """
         Delete a message.
 
@@ -134,7 +134,7 @@ class ChannelAPI:
         return await self.client.http.request(Router(f'/channels/{channel_id}/messages/{message_id}', 'DELETE'), 
             headers=_reason(reason))
 
-    async def channel_messages_bulk_delete(self, channel_id: str, message_ids: typing.List[str], reason: str = None) -> dict:
+    async def channel_messages_bulk_delete(self, channel_id: str, message_ids: typing.List[str], reason: str = None):
         """
         Bulk delete messages.
 
@@ -146,7 +146,7 @@ class ChannelAPI:
         return await self.client.http.request(Router(f'/channels/{channel_id}/messages/bulk-delete', 'POST'), json=message_ids,
             headers=_reason(reason))
 
-    async def channel_messages_edit(self, channel_id: str, message_id: str, reason: str = None, **data) -> dict:
+    async def channel_messages_edit(self, channel_id: str, message_id: str, reason: str = None, **data):
         """
         Edit a message.
 
@@ -158,7 +158,7 @@ class ChannelAPI:
         return await self.client.http.request(Router(f'/channels/{channel_id}/messages/{message_id}', 'PATCH'), json=data,
             headers=_reason(reason))
 
-    async def channel_messages_pin(self, channel_id: str, message_id: str, reason: str = None) -> dict:
+    async def channel_messages_pin(self, channel_id: str, message_id: str, reason: str = None):
         """
         Pin a message.
 
@@ -170,7 +170,7 @@ class ChannelAPI:
         return await self.client.http.request(Router(f'/channels/{channel_id}/messages/{message_id}/pin', 'PUT'),
             headers=_reason(reason))
     
-    async def channel_messages_unpin(self, channel_id: str, message_id: str, reason: str = None) -> dict:
+    async def channel_messages_unpin(self, channel_id: str, message_id: str, reason: str = None):
         """
         Unpin a message.
 
@@ -182,7 +182,7 @@ class ChannelAPI:
         return await self.client.http.request(Router(f'/channels/{channel_id}/messages/{message_id}/pin', 'DELETE'),
             headers=_reason(reason))
 
-    async def channel_messages_reactions_get(self, channel_id: str, message_id: str, emoji: "Emoji") -> dict:
+    async def channel_messages_reactions_get(self, channel_id: str, message_id: str, emoji: "Emoji"):
         """
         Get a message's reactions.
 
@@ -193,7 +193,7 @@ class ChannelAPI:
         """
         return await self.client.http.request(Router(f'/channels/{channel_id}/messages/{message_id}/reactions/{emoji.name}:{emoji.id}', 'GET'))
 
-    async def channel_messages_reactions_create_me(self, channel_id: str, message_id: str, emoji: "Emoji") -> dict:
+    async def channel_messages_reactions_create_me(self, channel_id: str, message_id: str, emoji: "Emoji"):
         """
         Create a reaction.
 
@@ -204,7 +204,7 @@ class ChannelAPI:
         """
         return await self.client.http.request(Router(f'/channels/{channel_id}/messages/{message_id}/reactions/{emoji.name}:{emoji.id}/@me', 'PUT'))
 
-    async def channel_messages_reactions_delete_me(self, channel_id: str, message_id: str, emoji: "Emoji", reason: str = None) -> dict:
+    async def channel_messages_reactions_delete_me(self, channel_id: str, message_id: str, emoji: "Emoji", reason: str = None):
         """
         Delete a reaction.
 
@@ -216,7 +216,7 @@ class ChannelAPI:
         return await self.client.http.request(Router(f'/channels/{channel_id}/messages/{message_id}/reactions/{emoji.name}:{emoji.id}/@me', 'DELETE'),
             headers=_reason(reason))
 
-    async def channel_messages_reactions_delete(self, channel_id: str, message_id: str, emoji: "Emoji", user_id: str, reason: str = None) -> dict:
+    async def channel_messages_reactions_delete(self, channel_id: str, message_id: str, emoji: "Emoji", user_id: str, reason: str = None):
         """
         Delete a reaction.
 
@@ -228,7 +228,7 @@ class ChannelAPI:
         return await self.client.http.request(Router(f'/channels/{channel_id}/messages/{message_id}/reactions/{emoji.name}:{emoji.id}/{user_id}', 'DELETE'),
             headers=_reason(reason))
 
-    async def channel_messages_reactions_delete_all(self, channel_id: str, message_id: str, emoji: "Emoji", reason: str = None) -> dict:
+    async def channel_messages_reactions_delete_all(self, channel_id: str, message_id: str, emoji: "Emoji", reason: str = None):
         """
         Delete all reactions.
 
@@ -240,7 +240,7 @@ class ChannelAPI:
         return await self.client.http.request(Router(f'/channels/{channel_id}/messages/{message_id}/reactions/{emoji.name}:{emoji.id}', 'DELETE'),
             headers=_reason(reason))
 
-    async def channel_messages_reactions_list(self, channel_id: str, message_id: str) -> typing.List["Reaction"]:
+    async def channel_messages_reactions_list(self, channel_id: str, message_id: str):
         """
         Get a message's reactions.
 
@@ -253,7 +253,7 @@ class ChannelAPI:
 
         return [Reaction(self.client, reaction) for reaction in res]
 
-    async def channel_edit_permission(self, channel_id: str, overwrite_id: str, reason: str = None , **data) -> dict:
+    async def channel_edit_permission(self, channel_id: str, overwrite_id: str, reason: str = None , **data):
         """
         Edit a channel permission.
 
@@ -265,7 +265,7 @@ class ChannelAPI:
         return await self.client.http.request(Router(f'/channels/{channel_id}/permissions/{overwrite_id}', 'PUT'), json=data,
             reason=_reason(reason))
 
-    async def channel_delete_permission(self, channel_id: str, overwrite_id: str, reason: str = None) -> dict:
+    async def channel_delete_permission(self, channel_id: str, overwrite_id: str, reason: str = None):
         """
         Delete a channel permission.
 
@@ -277,7 +277,7 @@ class ChannelAPI:
         return await self.client.http.request(Router(f'/channels/{channel_id}/permissions/{overwrite_id}', 'DELETE'),
             reason=_reason(reason))
 
-    async def channel_invite_create(self, channel_id: str, **data) -> dict:
+    async def channel_invite_create(self, channel_id: str, **data):
         """
         Create an invite.
 
@@ -288,7 +288,7 @@ class ChannelAPI:
         """
         return await self.client.http.request(Router(f'/channels/{channel_id}/invites', 'POST'), json=data)
 
-    async def channel_invite_delete(self, channel_id: str, invite_code: str) -> dict:
+    async def channel_invite_delete(self, channel_id: str, invite_code: str):
         """
         Delete an invite.
 
@@ -299,7 +299,7 @@ class ChannelAPI:
         """
         return await self.client.http.request(Router(f'/channels/{channel_id}/invites/{invite_code}', 'DELETE'))
 
-    async def channel_invite_list(self, channel_id: str) -> typing.List["Invite"]:
+    async def channel_invite_list(self, channel_id: str):
         """
         Get a channel's invites.
 
@@ -312,7 +312,7 @@ class ChannelAPI:
 
         return [Invite(self.client, invite) for invite in res]
 
-    async def create_dm(self, recipient_id: str) -> dict:
+    async def create_dm(self, recipient_id: str):
         """
         Create a direct message channel.
 
@@ -323,7 +323,7 @@ class ChannelAPI:
         """
         return await self.client.http.request(Router('/users/@me/channels', 'POST'), json={"recipient_id": recipient_id})
 
-    async def thread_join(self, thread_id: str) -> dict:
+    async def thread_join(self, thread_id: str):
         """
         Join a thread.
 
@@ -334,7 +334,7 @@ class ChannelAPI:
         """
         return await self.client.http.request(Router(f'/channels/{thread_id}/thread-members/@me', 'PUT'))
 
-    async def thread_leave(self, thread_id: str) -> dict:
+    async def thread_leave(self, thread_id: str):
         """
         Leave a thread.
 

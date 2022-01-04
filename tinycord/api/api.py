@@ -13,11 +13,11 @@ class APIClient(ChannelAPI, GuildAPI, UserAPI):
         self.client = client
         """The client."""
 
-        super(ChannelAPI, self).__init__(client)
+        ChannelAPI.__init__(self, client)
         """The channel api."""
 
-        super(GuildAPI, self).__init__(client)
+        GuildAPI.__init__(self, self.client)
         """The guild apis."""
 
-        super(UserAPI, self).__init__(client)
+        UserAPI.__init__(self, self.client)
         """The user api."""

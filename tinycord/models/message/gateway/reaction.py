@@ -3,11 +3,12 @@ import typing
 if typing.TYPE_CHECKING:
     from ....client import Client
 
-from ...guild import Emoji
 from ....utils import Snowflake
 
 class ReactionGateway:
     def __init__(self, client: "Client" , **data) -> None:
+        from ... import Emoji
+
         self.client = client
         """The main client."""
         
@@ -23,5 +24,5 @@ class ReactionGateway:
         self.user_id = data.get('user_id',None)
         """The user id."""
 
-        self.emoji = data.get('emoji')
+        self.emoji = Emoji(client, data.get('emoji'))
         """The emoji."""

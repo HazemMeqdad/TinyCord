@@ -12,7 +12,7 @@ class UserAPI:
         self.client = client
         """The client."""
 
-    async def user_get(self, user_id: str) -> "User":
+    async def user_get(self, user_id: str):
         """
         Get a user.
         Parameters
@@ -27,7 +27,7 @@ class UserAPI:
         res = await self.client.http.request(Router(f'/users/{user_id}', 'GET'))
         return User(res)
 
-    async def user_edit(self, user_id: str, **data) -> dict:
+    async def user_edit(self, user_id: str, **data):
         """
         Edit a user.
         Parameters
@@ -39,7 +39,7 @@ class UserAPI:
         """
         await self.client.http.request(Router(f'/users/{user_id}', 'PATCH'), json=data)
 
-    async def user_guild_leave(self, user_id: str, guild_id: str) -> dict:
+    async def user_guild_leave(self, user_id: str, guild_id: str):
         """
         Leave a guild.
         Parameters
