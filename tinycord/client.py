@@ -1,6 +1,6 @@
-# TinyCord is a discord bot written in python.
+# Tinycord is a discord wrapper for python built on top of asyncio and aiohttp.
 # LICENSE: MIT
-# AUTHOR: xArty
+# AUTHOR: xArty, H A Z E M
 
 from __future__ import annotations
 
@@ -14,15 +14,14 @@ import functools
 if typing.TYPE_CHECKING:
     from .intents import Intents
     from .models import *
+    from .plugin import Plugin
 
 from .core import Gateway, HTTPClient, GatewayDispatch
 from .middleware import get_middlewares
 from .utils import Snowflake
 
 logger: logging.Logger = logging.Logger("tinycord")
-events: typing.List[typing.Coroutine] = collections.defaultdict(list)
-
-from rich import print
+events: typing.Dict[str, typing.List[str, typing.Union[typing.Callable, typing.Awaitable]]] = collections.defaultdict(list)
 
 def middleware_event(event: str):
     """
@@ -120,11 +119,18 @@ class Client:
         self.users: typing.Dict[str, "User"] = {}
         """ The users of the bot. """
 
+        self.plugins: typing.Dict[str, "Plugin"] = {}
+
     @classmethod
     def event(cls, func: typing.Callable) -> typing.Union[typing.Callable, typing.Awaitable]:
         """
             This function is used to register an event.
             This is used to register events that are called after the event is called.
+            
+            Parameters
+            ----------
+            func : `typing.Callable`
+                The function to register.
         """
 
         events[func.__name__].append(func)
@@ -136,8 +142,12 @@ class Client:
         """
             This function is used to register an event.
             This is used to register events that are called after the event is called.
-        """
 
+            Parameters
+            ----------
+            event : `str`
+                The event to listen for.
+        """
         def decorator(func: typing.Callable):
             events[event].append(func)
 
@@ -147,6 +157,13 @@ class Client:
     async def wait_for(self, event: str, timeout: int) -> typing.Awaitable:
         """
             This function is used to wait for an event.
+
+            Parameters
+            ----------
+            event : `str`
+                The event to wait for.
+            timeout : `int`
+                The timeout of the event.
         """
         future = self.loop.create_future()
 
@@ -159,6 +176,42 @@ class Client:
         
         del events[event][events[event].index(future)]
         del future
+
+    def add_plugin(self, plugin: "Plugin") -> None:
+        """
+            This function is used to add a plugin to the bot.
+
+            Parameters
+            ----------
+            plugin : `Plugin`
+                The plugin to add.
+        """
+        plugin.client = self
+
+        for event, func in plugin.events.items():
+            for callback in func:
+                self.listen(event)(callback)
+
+        self.plugins[plugin.name] = plugin
+
+        return plugin
+
+    def remove_plugin(self, plugin: "Plugin") -> None:
+        """
+            This function is used to remove a plugin from the bot.
+
+            Parameters
+            ----------
+            plugin : `Plugin`
+                The plugin to remove.
+        """
+        for event, func in plugin.events.items():
+            for callback in func:
+                del events[event][events[event].index(callback)]
+
+        del self.plugins[plugin.name]
+
+        return plugin
             
     def connect(self) -> None:
         """

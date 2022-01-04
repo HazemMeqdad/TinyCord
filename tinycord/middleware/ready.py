@@ -28,7 +28,7 @@ async def ready(client: "Client", gateway: "Gateway", event: "GatewayDispatch") 
     """ The user that was ready. """
 
     return "on_ready", [
-        
+        gateway
     ]
     """ The event that was dispatched. """
 

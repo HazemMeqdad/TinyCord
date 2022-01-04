@@ -3,6 +3,7 @@ import dataclasses
 
 if typing.TYPE_CHECKING:
     from ...client import Client
+    from ...core import Gateway
 
 from .channel import BaseChannel
 from ..mixins import Hashable
@@ -29,7 +30,7 @@ class VoiceChannel(BaseChannel,Hashable):
         rtc_region : `str`
             The region of the channel.
     """
-    def __init__(self, client: "Client", guild_id: Snowflake , **data) -> None:
+    def __init__(self, client: "Client", guild_id: Snowflake, **data) -> None:
         self.bitrate: int = data.get('bitrate')
         """The bitrate of the channel."""
 
@@ -41,37 +42,3 @@ class VoiceChannel(BaseChannel,Hashable):
 
         super().__init__(client, guild_id, **data)
         """The base channel."""
-
-    async def connect(self, muted: bool = False, deafed: bool = True) -> None:
-        """
-            |coro|
-            Connects to the voice channel.
-
-            Parameters
-            ----------
-            muted : `bool`
-                Whether the bot should be muted or not.
-            deafed : `bool`
-                Whether the bot should be deafed or not.
-        """
-        
-        await self.client.gw.send(4, {
-            'guild_id': self.guild_id,
-            'channel_id': self.id,
-            'self_mute': muted,
-            'self_deaf': deafed,
-        })
-
-    async def disconnect(self) -> None:
-        """
-            |coro|
-            Disconnects from the voice channel.
-        """
-
-        await self.client.gw.send(4, {
-            'guild_id': self.guild_id,
-            'channel_id': None,
-            'self_mute': False,
-            'self_deaf': False,
-        })
-        

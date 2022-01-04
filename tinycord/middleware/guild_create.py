@@ -5,6 +5,7 @@ if typing.TYPE_CHECKING:
     from ..core import Gateway, GatewayDispatch
 
 from ..models import Guild
+# from ..client import events
     
 async def guild_create(client: "Client", gateway: "Gateway", event: "GatewayDispatch") -> typing.List[typing.Awaitable]:
     """
@@ -44,6 +45,7 @@ async def guild_create(client: "Client", gateway: "Gateway", event: "GatewayDisp
             
 
             return "on_ready", [
+                gateway
             ]
 
         return "on_guild_cache", [

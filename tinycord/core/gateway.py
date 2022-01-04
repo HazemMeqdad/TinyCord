@@ -350,3 +350,6 @@ class Gateway:
             logger.debug(
                 f" {self.shard_id} Heartbeat sent to gateway..."
             )
+
+    def __repr__(self) -> str:
+        return f'<GatewayShard {self.shard_id}>'
