@@ -80,3 +80,42 @@ class Role(Hashable):
 
         self.tags: typing.Dict[str, typing.Any] = data.get('tags')
         """The tags of the role."""
+
+    async def edit(self, reason: str = None, **kwargs) -> None:
+        """
+            Edits the role.
+
+            Parameters
+            ----------
+            reason : `str`
+                The reason for editing the role.
+            **kwargs : `typing.Dict`
+                The data that is used to edit the role.
+        """
+
+        await self.client.api.guild_edit_role(self.guild_id, self.id, reason, **kwargs)
+
+    async def delete(self, reason: str = None) -> None:
+        """
+            Deletes the role.
+
+            Parameters
+            ----------
+            reason : `str`
+                The reason for deleting the role.
+        """
+
+        await self.client.api.guild_delete_role(self.guild_id, self.id, reason)
+
+    @property
+    def is_default(self) -> bool:
+        """
+            Whether the role is the default role.
+
+            Returns
+            -------
+            `bool`
+                Whether the role is the default role.
+        """
+
+        return self.name == "@everyone"

@@ -3,7 +3,7 @@ import dataclasses
 
 if typing.TYPE_CHECKING:
     from ...client import Client
-    from ..guild import Guild, Member
+    from ..guild import Guild, Member, Emoji
     from ..channels import All
 
 from ..mixins import Hashable
@@ -153,3 +153,63 @@ class Message(Hashable):
     def author(self) -> typing.Union["Member", None]:
         """The author id of the message."""
         return self.guild.get_member(self.user.id)
+
+    async def pin(self) -> None:
+        """
+            Pin the message.
+        """
+        await self.client.api.channel_messages_pin(self.channel_id, self.id)
+
+    async def unpin(self) -> None:
+        """
+            Unpin the message.
+        """
+        await self.client.api.channel_messages_unpin(self.channel_id, self.id)
+
+    async def delete(self) -> None:
+        """
+            Delete the message.
+        """
+        await self.client.api.channel_messages_delete(self.channel_id, self.id)
+
+    async def add_reaction(self, emoji: "Emoji") -> None:
+        """
+            Add a reaction to the message.
+
+            Parameters
+            ----------
+            emoji : `str`
+                The emoji of the reaction.
+        """
+        await self.client.api.channel_messages_reactions_create(self.channel_id, self.id, emoji)
+        
+    async def delete_reaction(self, emoji: "Emoji") -> None:
+        """
+            Delete a reaction from the message.
+
+            Parameters
+            ----------
+            emoji : `str`
+                The emoji of the reaction.
+        """
+        await self.client.api.channel_messages_reactions_delete(self.channel_id, self.id, emoji)
+
+    async def remove_reactions(self) -> None:
+        """
+            Remove all reactions from the message.
+        """
+        await self.client.api.channel_message(self.channel_id, self.id)
+
+    async def remove_reaction(self, user_id, emoji) -> None:
+        """
+            Remove a reaction from the message.
+
+            Parameters
+            ----------
+            user_id : `str`
+                The user id of the reaction.
+            emoji : `str`
+                The emoji of the reaction.
+        """
+        await self.client.api.channel_messages_reactions_delete(self.channel_id, self.id, emoji, user_id)
+        

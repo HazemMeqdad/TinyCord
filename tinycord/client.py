@@ -19,6 +19,7 @@ if typing.TYPE_CHECKING:
 from .core import Gateway, HTTPClient, Router, GatewayDispatch
 from .middleware import get_middlewares
 from .utils import Snowflake
+from .api import APIClient
 
 logger: logging.Logger = logging.Logger("tinycord")
 events: typing.Dict[str, typing.List[str, typing.Union[typing.Callable, typing.Awaitable]]] = collections.defaultdict(list)
@@ -100,6 +101,9 @@ class Client:
 
         self.http = HTTPClient(self)
         """ The HTTP client of the bot. """
+
+        self.api = APIClient(self)
+        """ The API client of the bot. """
 
         self.user: "User" = None
         """ The user of the bot. """

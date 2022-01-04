@@ -81,4 +81,26 @@ class Sticker(Hashable):
         self.sort_value: int = data.get('sort_value')
         """The sort value of the sticker."""
 
+    async def edit(self, reason: str = None, **kwargs) -> None:
+        """
+            Edits the sticker.
 
+            Parameters
+            ----------
+            reason : `str`
+                The reason for editing the sticker.
+            **kwargs : `typing.Any`
+                The data that is used to edit the sticker.
+        """
+        await self.client.api.guild_edit_sticker(self.guild_id, self.id, reason, **kwargs)
+
+    async def delete(self, reason: str = None) -> None:
+        """
+            Deletes the sticker.
+
+            Parameters
+            ----------
+            reason : `str`
+                The reason for deleting the sticker.
+        """
+        await self.client.api.guild_delete_sticker(self.guild_id, self.id, reason)

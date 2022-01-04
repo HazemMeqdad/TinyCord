@@ -103,3 +103,93 @@ class Member(User, Hashable):
         """The display hex color of the member."""
 
         return self.top_role.color
+
+    @property
+    def display_name(self) -> str:
+        """The display name of the member."""
+
+        return self.nick if self.nick else self.name
+
+    @property
+    def mention(self) -> str:
+        """The mention of the member."""
+
+        return f'<@{self.id}>'
+
+    async def edit(self, reason: str = None, **kwargs) -> None:
+        """
+            Edits the member.
+
+            Parameters
+            ----------
+            reason : `typing.Union[str, None]`
+                The reason for the edit.
+            **kwargs
+                The key-value pairs to edit.
+        """
+
+        await self.client.api.guild_member_edit(self.guild_id, self.id, reason, **kwargs)
+
+    async def add_role(self, role_id: Snowflake, reason: str = None) -> None:
+        """
+            Adds a role to the member.
+
+            Parameters
+            ----------
+            role_id : `Snowflake`
+                The ID of the role.
+            reason : `typing.Union[str, None]`
+                The reason for the edit.
+        """
+
+        await self.client.api.guild_member_add_role(self.guild_id, self.id, role_id, reason)
+
+    async def remove_role(self, role_id: Snowflake, reason: str = None) -> None:
+        """
+            Removes a role from the member.
+
+            Parameters
+            ----------
+            role_id : `Snowflake`
+                The ID of the role.
+            reason : `typing.Union[str, None]`
+                The reason for the edit.
+        """
+
+        await self.client.api.guild_member_delete_role(self.guild_id, self.id, role_id, reason)
+
+    async def kick(self, reason: str = None) -> None:
+        """
+            Kicks the member.
+
+            Parameters
+            ----------
+            reason : `typing.Union[str, None]`
+                The reason for the kick.
+        """
+
+        await self.client.api.guild_kick_member(self.guild_id, self.id, reason)
+
+    async def ban(self, reason: str = None) -> None:
+        """
+            Bans the member.
+
+            Parameters
+            ----------
+            reason : `typing.Union[str, None]`
+                The reason for the ban.
+        """
+
+        await self.client.api.guild_ban_member(self.guild_id, self.id, reason)
+
+    async def unban(self, reason: str = None) -> None:
+        """
+            Unbans the member.
+
+            Parameters
+            ----------
+            reason : `typing.Union[str, None]`
+                The reason for the unban.
+        """
+
+        await self.client.api.guild_unban(self.guild_id, self.id, reason)

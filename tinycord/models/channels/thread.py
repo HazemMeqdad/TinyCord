@@ -36,4 +36,15 @@ class ThreadChannel(BaseChannel,Hashable):
         super().__init__(client, guild_id, **data)
         """The base channel."""
 
+    async def join(self):
+        """
+            This is used to join the thread.
+        """
+        await self.client.api.thread_join(self.id)
+
+    async def leave(self):
+        """
+            This is used to leave the thread.
+        """
+        await self.client.api.thread_leave(self.id)
         

@@ -66,3 +66,20 @@ class BaseChannel(Hashable):
         self.parent_id: Snowflake = Snowflake(
             data.get('parent_id'))
         """The ID of the parent channel."""
+
+    async def edit(self, reason: str = None, **kwargs) -> None:
+        """
+            Edits the channel.
+
+            Parameters
+            ----------
+            **kwargs
+                The attributes that are used to edit the channel.
+        """
+        await self.client.api.channel_edit(self.id, reason , **kwargs)
+
+    async def delete(self, reason: str = None) -> None:
+        """
+            Deletes the channel.
+        """
+        await self.client.api.channel_delete(self.id, reason)

@@ -5,6 +5,7 @@ if typing.TYPE_CHECKING:
     from ...client import Client
 
 from .channel import BaseChannel
+from ..message import Message
 from ..mixins import Hashable
 from ...utils import Snowflake
 
@@ -64,4 +65,22 @@ class TextChannel(BaseChannel,Hashable):
         super().__init__(client, guild_id, **data)
         """The base channel."""
 
-        
+    async def send(self, content: str, **kwargs) -> "Message":
+        """
+            This is used to send a message to the channel.
+
+            Parameters
+            ----------
+            content : `str`
+                The content of the message.
+
+            Returns
+            -------
+            `Message`
+                The message that was sent.
+        """
+
+        kwargs.update({'content': content})
+
+        return await self.client.api.channel_messages_create(
+            self.id, **kwargs)
