@@ -3,7 +3,7 @@ import dataclasses
 
 if typing.TYPE_CHECKING:
     from ...client import Client
-    from ..guild import Guild
+    from ..guild import Guild, Role
     from ..user import Voicestate
 
 from ..mixins import Hashable
@@ -79,4 +79,27 @@ class Member(User, Hashable):
         """The voice state of the member."""
 
         return self.guild.get_voice_state(self.id)
+
+    @property
+    def roles(self) -> typing.List["Role"]:
+        """The roles of the member."""
+
+        return [self.guild.get_role(role_id) for role_id in self.roles_ids]
         
+    @property
+    def top_role(self) -> "Role":
+        """The top role of the member."""
+
+        return max(self.roles, key=lambda role: int(role.position))
+
+    @property
+    def all_permissions(self) -> typing.List[str]:
+        """The permissions of the member."""
+
+        return [ permission for permission in [role.permissions for role in self.roles] ]
+
+    @property
+    def display_hex_color(self) -> str:
+        """The display hex color of the member."""
+
+        return self.top_role.color

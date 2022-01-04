@@ -16,7 +16,7 @@ if typing.TYPE_CHECKING:
     from .models import *
     from .plugin import Plugin
 
-from .core import Gateway, HTTPClient, GatewayDispatch
+from .core import Gateway, HTTPClient, Router, GatewayDispatch
 from .middleware import get_middlewares
 from .utils import Snowflake
 
@@ -121,6 +121,12 @@ class Client:
 
         self.plugins: typing.Dict[str, "Plugin"] = {}
 
+        async def warrper():
+            url = await self.http.request(Router('/gateway', 'GET'))
+            self.url = url['url']
+
+        self.loop.run_until_complete(warrper())
+
     @classmethod
     def event(cls, func: typing.Callable) -> typing.Union[typing.Callable, typing.Awaitable]:
         """
@@ -196,7 +202,7 @@ class Client:
 
         return plugin
 
-    def remove_plugin(self, plugin: "Plugin") -> None:
+    def remove_plugin(self, plugin_name: str) -> None:
         """
             This function is used to remove a plugin from the bot.
 
@@ -205,13 +211,16 @@ class Client:
             plugin : `Plugin`
                 The plugin to remove.
         """
+        plugin = self.plugins.get(plugin_name, None)
+
+        if plugin == None:
+            return
+
         for event, func in plugin.events.items():
             for callback in func:
                 del events[event][events[event].index(callback)]
 
         del self.plugins[plugin.name]
-
-        return plugin
             
     def connect(self) -> None:
         """
@@ -227,7 +236,7 @@ class Client:
         """
             This function is used to connect to Discord with autosharding.
         """
-        self.info = self.loop.run_until_complete(self.http.request('/gateway/bot', 'GET'))
+        self.info = self.loop.run_until_complete(self.http.request(Router("/gateway/bot", "GET")))
 
         for shard in range(self.info['shards']):
 
@@ -246,13 +255,11 @@ class Client:
         """
             This function is used to start a shard.
         """
-
-        url = await self.http.request('/gateway', 'GET')
         
         gateway = Gateway(
             token = self.token,
             intents = self.intents,
-            url = url['url'],
+            url = self.url,
             shard_id = shard_id,
             shard_count = shard_count,
         )

@@ -1,9 +1,12 @@
 import typing
 import aiohttp
 import asyncio
+import sys
 
 if typing.TYPE_CHECKING:
     from ..client import Client
+
+from .router import Router
 
 class HTTPClient:
     """
@@ -25,12 +28,20 @@ class HTTPClient:
         self.session = aiohttp.ClientSession()
         """ The session that is used to make the request. """
 
+        self.loop = asyncio.get_event_loop()
+        """ The event loop that is used to make the request. """
+
         self.headers = {
             'Authorization': self.client.token,
         }
         """ The headers that are used to make the request. """
 
-    async def request(self, url: str , method: str, **kwargs):
+        self.lock = asyncio.Lock(
+           **({"loop": self.loop} if sys.version_info[:2] < (3, 8) else {})
+        )
+        """ The lock that is used to make the request. """
+
+    async def request(self, route: "Router", **kwargs):
         """
             This function is used to make a request to the gateway.
 
@@ -45,21 +56,27 @@ class HTTPClient:
             for k, v in kwargs['headers'].items():
                 self.headers[k] = v
 
-        url = f'https://discord.com/api/v9{url}'
-
         response = await self.session.request(
-            method,
-            url,
+            url=route.path,
+            method=route.method,
+            
             headers=self.headers,
+
             **kwargs
         )
 
         if response.status == 429:
-            await self.ratelimit(response.headers['Retry-After'], url, method, **kwargs)
+            retry_after = response.headers.get('Retry-After')
+
+            async with self.lock.acquire():
+                
+                await self.ratelimit(float(retry_after), route, **kwargs)
+            
+            self.lock.release()
 
         return await response.json()
 
-    async def ratelimit(self, retry_after: float, url: str, method: str, **kwargs):
+    async def ratelimit(self, retry_after: float, route: "Router", **kwargs):
         """
             This function is used to handle ratelimits.
 
@@ -71,7 +88,6 @@ class HTTPClient:
         await asyncio.sleep(retry_after if type(retry_after) == float else float(retry_after))
 
         return await self.request(
-            url=url,
-            method=method,
+            route,
             **kwargs,
         )

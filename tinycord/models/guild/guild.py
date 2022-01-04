@@ -446,3 +446,9 @@ class Guild(Hashable):
         """
 
         return self.voice_states.get(str(id), None)
+
+    @property
+    def me(self) -> typing.Union["Member", None]:
+        """The current user of the guild."""
+
+        return self.get_member(self.client.user.id)
