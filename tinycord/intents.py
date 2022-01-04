@@ -1,7 +1,7 @@
 from enum import IntEnum
 from .models.mixins import EnumMixin
 
-class Intents(IntEnum, EnumMixin):
+class Intents(EnumMixin, IntEnum):
     """
         This is the intents enum.
         This used to define the intents that are used to connect to Discord.

@@ -9,6 +9,7 @@ import logging
 import asyncio
 import logging
 import collections
+import functools
 
 if typing.TYPE_CHECKING:
     from .intents import Intents
@@ -195,7 +196,7 @@ class Client:
 
         url = await self.http.request('/gateway', 'GET')
         
-        self.gw = gateway = Gateway(
+        gateway = Gateway(
             token = self.token,
             intents = self.intents,
             url = url['url'],
@@ -203,13 +204,13 @@ class Client:
             shard_count = shard_count,
         )
 
-        self.gw.append_handler({
-            0: self.handle_event,
+        gateway.append_handler({
+            0: functools.partial(self.handle_event, gateway),
         })
 
         asyncio.create_task(gateway.start_connection())
 
-    async def handle_middleware(self, client: "Client", gateway: "Gateway" , payload: "GatewayDispatch") -> None:
+    async def handle_middleware(self, payload: "GatewayDispatch", gateway: "Gateway") -> None:
         """
             This function is used to handle middleware events.
             It's called before the event is called. Which means that you can modify the event.
@@ -221,7 +222,7 @@ class Client:
         if ware is not None:
 
             try:
-                extractable = await ware(client, gateway, payload)
+                extractable = await ware(self, gateway, payload)
             except:
                 extractable = (None, None)
 
@@ -241,12 +242,12 @@ class Client:
 
         return (None, None, None)
 
-    async def handle_event(self, payload: "GatewayDispatch") -> None:
+    async def handle_event(self, payload: "GatewayDispatch", gateway: "Gateway") -> None:
         """
             This function is used to handle an event.
             It's called after the middleware is called.
         """
-        event, args, callback = await self.handle_middleware(self, self.gw, payload)
+        event, args, callback = await self.handle_middleware(gateway , payload)
         
         if callback != None:
             if asyncio.isfuture(callback):
