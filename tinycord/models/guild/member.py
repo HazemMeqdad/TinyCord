@@ -108,7 +108,13 @@ class Member(User, Hashable):
     def display_name(self) -> str:
         """The display name of the member."""
 
-        return self.nick if self.nick else self.name
+        return self.nick if self.nick else self.display_name
+
+    @property
+    def full_name(self) -> str:
+        """The full name of the member."""
+
+        return f"{self.username}#{self.discriminator}"
 
     @property
     def mention(self) -> str:

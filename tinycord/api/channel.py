@@ -119,6 +119,8 @@ class ChannelAPI:
             data=json.dumps({'payload_json': json.dumps(data),'files': data.get('files', [])}), 
             headers={'Content-Type': 'application/json'}
         )
+
+        res.update({'guild_id': data.get('guild_id', None)})
         
         return Message(self.client, **res)
 

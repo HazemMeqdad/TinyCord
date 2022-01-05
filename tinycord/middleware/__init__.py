@@ -15,7 +15,7 @@ def get_middlewares() -> typing.Dict[str, typing.Union[typing.Callable, typing.A
 
     with Path(__file__).parent.resolve() as path:
 
-        for file in glob(os.path.abspath(path) + "\*.py"):
+        for file in glob(os.path.abspath(path) + "/*.py"):
 
             event = file.split('/')[-1].split('.')[0].split(u'\u005c')[-1]
             """ The event of the middleware. """

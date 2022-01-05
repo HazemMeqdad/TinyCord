@@ -81,6 +81,7 @@ class TextChannel(BaseChannel,Hashable):
         """
 
         kwargs.update({'content': content})
+        kwargs.update({'guild_id': self.guild_id})
 
         return await self.client.api.channel_messages_create(
             self.id, **kwargs)
