@@ -4,6 +4,7 @@ import dataclasses
 if typing.TYPE_CHECKING:
     from ...client import Client
     from ..user import Integration
+    from ...core import Gateway
 
 from ..mixins import Hashable
 from ...utils import Snowflake
@@ -452,6 +453,12 @@ class Guild(Hashable):
         """The current user of the guild."""
 
         return self.get_member(self.client.user.id)
+
+    @property
+    def shard(self) -> typing.Union["Gateway", None]:
+        """The shard of the guild."""
+
+        return self.client.shards[hash(self) % len(self.client.shards)]
 
     async def edit(self, reason: str = None, **kwargs):
         """

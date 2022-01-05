@@ -130,6 +130,9 @@ class Client:
             self.url = url['url']
 
         self.loop.run_until_complete(warrper())
+        """ The url of the gateway. """
+
+        self.shards: typing.Dict[int, "Gateway"] = {}
 
     @classmethod
     def event(cls, func: typing.Callable) -> typing.Union[typing.Callable, typing.Awaitable]:
@@ -267,6 +270,8 @@ class Client:
             shard_id = shard_id,
             shard_count = shard_count,
         )
+
+        self.shards[shard_id] = gateway
 
         gateway.append_handler({
             0: functools.partial(self.handle_event, gateway),

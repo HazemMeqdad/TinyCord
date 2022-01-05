@@ -3,6 +3,7 @@ import dataclasses
 
 if typing.TYPE_CHECKING:
     from ...client import Client
+    from ..guild import Guild
 
 from ..mixins import Hashable
 from ...utils import Snowflake
@@ -66,6 +67,12 @@ class BaseChannel(Hashable):
         self.parent_id: Snowflake = Snowflake(
             data.get('parent_id'))
         """The ID of the parent channel."""
+
+    @property
+    def guild(self) -> typing.Union["Guild", None]:
+        """The guild of the channel."""
+
+        return self.client.get_guild(self.guild_id)
 
     async def edit(self, reason: str = None, **kwargs) -> None:
         """

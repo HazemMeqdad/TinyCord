@@ -42,3 +42,20 @@ class VoiceChannel(BaseChannel,Hashable):
 
         super().__init__(client, guild_id, **data)
         """The base channel."""
+
+    async def connect(self, self_mute: bool = False, self_deaf: bool = True) -> None:
+        """
+            This function is used to connect to the voice channel.
+
+            Parameters
+            ----------
+            gateway : `Gateway`
+                The gateway to connect to.
+        """
+        await self.guild.shard.voice_connect(self.guild_id, self.id, self_mute, self_deaf)
+
+    async def disconnect(self) -> None:
+        """
+            This function is used to disconnect from the voice channel.
+        """
+        await self.guild.shard.voice_disconnect(self.guild_id)
