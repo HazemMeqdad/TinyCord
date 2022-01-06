@@ -1,6 +1,4 @@
 import typing
-import aiohttp
-import asyncio
 import json
 
 if typing.TYPE_CHECKING:

@@ -6,8 +6,6 @@ from .voice import VoiceChannel
 from ...utils import Snowflake
 from .thread import ThreadChannel
 
-from rich import print
-
 def deserialize_channel(client, guild_id , **data):
     """
     This is the deserialize_channel function.

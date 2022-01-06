@@ -3,7 +3,7 @@
     <p> Easy and flexible Discord wrapper built on aiohttp </p>
     <p>Thanks to <a href="https://github.com/Pincer-org/Pincer">Pincer</a> because we did take a lot of ideas and things from it <3  </p>
     <br>
-    <img src="./banner.png" />
+    <img src="./Big-Banner.png" />
     <br>
 </div>
 

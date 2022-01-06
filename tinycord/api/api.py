@@ -1,5 +1,4 @@
 import typing
-import asyncio
 
 if typing.TYPE_CHECKING:
     from ..client import Client

@@ -3,7 +3,6 @@ import dataclasses
 
 if typing.TYPE_CHECKING:
     from ...client import Client
-    from ...core import Gateway
 
 from .channel import BaseChannel
 from ..mixins import Hashable
