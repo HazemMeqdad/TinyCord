@@ -3,7 +3,7 @@
     <p> Easy and flexible Discord wrapper built on aiohttp </p>
     <p>Thanks to <a href="https://github.com/Pincer-org/Pincer">Pincer</a> because we did take a lot of ideas and things from it <3  </p>
     <br>
-    <img src="./banner.png" />
+    <img src="./Big-Banner.png" />
     <br>
 </div>
 
@@ -55,6 +55,18 @@ async def update_message(before: tinycord.Message, after: tinycord.Message):
 client.connect_autosharded()
 ```
 
+# Plugin
+
+```py
+import tinycord
+
+plugin = tinycord.Plugin('test')
+
+@plugin.event
+async def on_ready(shard):
+    print(f'{shard} is ready!')
+```
+
 # Docs
 first let's finish the lib LOL.
 
@@ -70,5 +82,5 @@ first let's finish the lib LOL.
 #### Right Now the lib is in huge development we want to add more things to it like interactions and good event handling
 
 # Maintainers
-xArty#9065 <br>
-H A Z E M#1629
+### [xArty#9065](xarty.xyz)
+### [H A Z E M#1629](https://discord.com/channels/@me/750376850768789534)

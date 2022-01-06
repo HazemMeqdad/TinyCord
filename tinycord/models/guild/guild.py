@@ -4,6 +4,7 @@ import dataclasses
 if typing.TYPE_CHECKING:
     from ...client import Client
     from ..user import Integration
+    from ...core import Gateway
 
 from ..mixins import Hashable
 from ...utils import Snowflake
@@ -179,7 +180,7 @@ class Guild(Hashable):
         """The ID of the embed channel."""
 
         self.channels: typing.Dict[str, "All"] = {
-            channel['id'] : deserialize_channel(self.client, **channel) for channel in data.get('channels', [])}
+            channel['id'] : deserialize_channel(self.client, self.id , **channel) for channel in data.get('channels', [])}
         """The channels of the guild."""
         
         self.threads: typing.Dict[str, "ThreadChannel"] = {
@@ -207,7 +208,7 @@ class Guild(Hashable):
         """The users of the guild."""
 
         self.voice_states: typing.Dict[str, "Voicestate"] = {
-            voice_state['user']['id'] : Voicestate(client, self.id, **voice_state) for voice_state in data.get('voice_states')}
+            voice_state['user_id'] : Voicestate(client, self.id , **voice_state) for voice_state in data.get('voice_states')}
         """The voice states of the guild."""
         
         self.features: typing.List[str] = data.get('features')
@@ -446,3 +447,134 @@ class Guild(Hashable):
         """
 
         return self.voice_states.get(str(id), None)
+
+    @property
+    def me(self) -> typing.Union["Member", None]:
+        """The current user of the guild."""
+
+        return self.get_member(self.client.user.id)
+
+    @property
+    def shard(self) -> typing.Union["Gateway", None]:
+        """The shard of the guild."""
+
+        return self.client.shards[hash(self) % len(self.client.shards)]
+
+    async def edit(self, reason: str = None, **kwargs):
+        """
+            Edit the guild.
+
+            Parameters
+            ----------
+            reason : `str`
+                The reason of the edit.
+            **kwargs
+                The attributes of the guild.
+        """
+
+        return await self.client.api.guild_edit(self.id, reason, **kwargs)
+
+    async def leave(self):
+        """
+            Leave the guild.
+        """
+
+        return await self.client.api.guild_delete(self.id)
+
+    async def unban(self, user_id: "Snowflake", reason: str = None):
+        """
+            Unban a user from the guild.
+
+            Parameters
+            ----------
+            user_id : `Snowflake`
+                The ID of the user.
+            reason : `str`
+                The reason for the unban.
+        """
+        return await self.client.api.guild_unban(self.id, user_id, reason)
+
+    async def create_role(self, reason: str = None, **kwargs):
+        """
+        Create a new role in the guild.
+
+        Parameters
+        ----------
+        **kwargs: typing.Dict[str, typing.Any]
+            The keyword arguments to create the role.
+
+        Returns
+        -------
+        `Role`
+            The created role.
+        """
+
+        return await self.client.api.guild_create_role(self.id, reason, **kwargs)
+
+    async def create_channel(self, reason: str = None, **kwargs):
+        """
+        Create a new channel in the guild.
+
+        Parameters
+        ----------
+        **kwargs: typing.Dict[str, typing.Any]
+            The keyword arguments to create the channel.
+
+        Returns
+        -------
+        `All`
+            The created channel.
+        """
+
+        return await self.client.api.guild_create_channel(self.id, reason, **kwargs)
+
+    async def create_emoji(self, reason: str = None, **kwargs):
+        """
+        Create a new emoji in the guild.
+
+        Parameters
+        ----------
+        **kwargs: typing.Dict[str, typing.Any]
+            The keyword arguments to create the emoji.
+
+        Returns
+        -------
+        `Emoji`
+            The created emoji.
+        """
+
+        return await self.client.api.guild_create_emoji(self.id, reason, **kwargs)
+
+    async def create_sticker(self, reason: str = None, **kwargs):
+        """
+        Create a new sticker in the guild.
+
+        Parameters
+        ----------
+        **kwargs: typing.Dict[str, typing.Any]
+            The keyword arguments to create the sticker.
+
+        Returns
+        -------
+        `Sticker`
+            The created sticker.
+        """
+
+        return await self.client.api.guild_create_sticker(self.id, reason, **kwargs)
+
+    async def create_template(self, name: str, description: str = None):
+        """
+        Create a new template in the guild.
+
+        Parameters
+        ----------
+        **kwargs: typing.Dict[str, typing.Any]
+            The keyword arguments to create the template.
+
+        Returns
+        -------
+        `Template`
+            The created template.
+        """
+
+        return await self.client.api.guild_template_create(self.id, name, description)

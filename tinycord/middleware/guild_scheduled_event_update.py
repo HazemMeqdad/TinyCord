@@ -34,7 +34,7 @@ async def scheduled_event_update(client: "Client", gateway: "Gateway", event: "G
     guild.guild_scheduled_events[str(after.id)] = after
     """ The new scheduled event. """
 
-    return "on_scheduled_event_update", [
+    return "on_scheduled_update", [
         guild, before, after
     ]
     """ The event that was dispatched. """

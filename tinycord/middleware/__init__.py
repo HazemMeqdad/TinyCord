@@ -1,6 +1,8 @@
 import typing
+import os
 
 from glob import glob
+from pathlib import Path
 from importlib import import_module
 
 def get_middlewares() -> typing.Dict[str, typing.Union[typing.Callable, typing.Awaitable]]:
@@ -10,22 +12,24 @@ def get_middlewares() -> typing.Dict[str, typing.Union[typing.Callable, typing.A
     middlewares: typing.Dict[str, typing.Union[typing.Callable, typing.Awaitable]] = {}
     """ The middlewares of the bot. """
 
-    for file in glob("tinycord/middleware/*.py"):
 
-        event = file.split('/')[-1].split('.')[0].split(u'\u005c')[-1]
-        """ The event of the middleware. """
+    with Path(__file__).parent.resolve() as path:
 
-        try:
-            module: module = import_module(f".{event}", package=__name__)
-            """ The module of the middleware. """
-            middlewares[event] = getattr(module, 'export')()
-            """ The middleware of the bot. """
+        for file in glob(os.path.abspath(path) + "/*.py"):
 
-        except ModuleNotFoundError:
-            continue
+            event = file.split('/')[-1].split('.')[0].split(u'\u005c')[-1]
+            """ The event of the middleware. """
 
-        except AttributeError:
-            continue
+            try:
+                module: module = import_module(f".{event}", package=__name__)
+                """ The module of the middleware. """
+                middlewares[event] = getattr(module, 'export')()
+                """ The middleware of the bot. """
 
-    return middlewares
-    """ The middlewares of the bot. """
+            except ModuleNotFoundError:
+                continue
+            except AttributeError:
+                continue
+
+        return middlewares
+        """ The middlewares of the bot. """

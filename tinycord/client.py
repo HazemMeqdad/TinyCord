@@ -1,6 +1,6 @@
-# TinyCord is a discord bot written in python.
+# Tinycord is a discord wrapper for python built on top of asyncio and aiohttp.
 # LICENSE: MIT
-# AUTHOR: xArty
+# AUTHOR: xArty, H A Z E M
 
 from __future__ import annotations
 
@@ -8,17 +8,21 @@ import typing
 import logging
 import asyncio
 import logging
+import collections
+import functools
 
 if typing.TYPE_CHECKING:
     from .intents import Intents
     from .models import *
+    from .plugin import Plugin
 
-from .core import Gateway, HTTPClient, GatewayDispatch
+from .core import Gateway, HTTPClient, Router, GatewayDispatch
 from .middleware import get_middlewares
 from .utils import Snowflake
+from .api import APIClient
 
 logger: logging.Logger = logging.Logger("tinycord")
-events: typing.List[typing.Coroutine] = {}
+events: typing.Dict[str, typing.List[str, typing.Union[typing.Callable, typing.Awaitable]]] = collections.defaultdict(list)
 
 def middleware_event(event: str):
     """
@@ -89,11 +93,17 @@ class Client:
         self.reconnect = reconnect
         """ Whether the bot should reconnect or not. """
 
+        self.is_ready = False
+        """ Whether the bot is ready or not. """
+
         self.loop: asyncio.AbstractEventLoop = asyncio.get_event_loop()
         """ The event loop of the bot. """
 
         self.http = HTTPClient(self)
         """ The HTTP client of the bot. """
+
+        self.api = APIClient(self)
+        """ The API client of the bot. """
 
         self.user: "User" = None
         """ The user of the bot. """
@@ -113,14 +123,30 @@ class Client:
         self.users: typing.Dict[str, "User"] = {}
         """ The users of the bot. """
 
+        self.plugins: typing.Dict[str, "Plugin"] = {}
+
+        async def warrper():
+            url = await self.http.request(Router('/gateway', 'GET'))
+            self.url = url['url']
+
+        self.loop.run_until_complete(warrper())
+        """ The url of the gateway. """
+
+        self.shards: typing.Dict[int, "Gateway"] = {}
+
     @classmethod
     def event(cls, func: typing.Callable) -> typing.Union[typing.Callable, typing.Awaitable]:
         """
             This function is used to register an event.
             This is used to register events that are called after the event is called.
+            
+            Parameters
+            ----------
+            func : `typing.Callable`
+                The function to register.
         """
 
-        events[func.__name__] = func
+        events[func.__name__].append(func)
 
         return func
 
@@ -129,14 +155,80 @@ class Client:
         """
             This function is used to register an event.
             This is used to register events that are called after the event is called.
-        """
 
+            Parameters
+            ----------
+            event : `str`
+                The event to listen for.
+        """
         def decorator(func: typing.Callable):
-            events[event] = func
+            events[event].append(func)
 
             return func
         return decorator
 
+    async def wait_for(self, event: str, timeout: int) -> typing.Awaitable:
+        """
+            This function is used to wait for an event.
+
+            Parameters
+            ----------
+            event : `str`
+                The event to wait for.
+            timeout : `int`
+                The timeout of the event.
+        """
+        future = self.loop.create_future()
+
+        self.listen(event)(future)
+
+        try:
+            return await asyncio.wait_for(future, timeout=timeout)
+        except asyncio.TimeoutError:
+            pass
+        
+        del events[event][events[event].index(future)]
+        del future
+
+    def add_plugin(self, plugin: "Plugin") -> None:
+        """
+            This function is used to add a plugin to the bot.
+
+            Parameters
+            ----------
+            plugin : `Plugin`
+                The plugin to add.
+        """
+        plugin.client = self
+
+        for event, func in plugin.events.items():
+            for callback in func:
+                self.listen(event)(callback)
+
+        self.plugins[plugin.name] = plugin
+
+        return plugin
+
+    def remove_plugin(self, plugin_name: str) -> None:
+        """
+            This function is used to remove a plugin from the bot.
+
+            Parameters
+            ----------
+            plugin : `Plugin`
+                The plugin to remove.
+        """
+        plugin = self.plugins.get(plugin_name, None)
+
+        if plugin == None:
+            return
+
+        for event, func in plugin.events.items():
+            for callback in func:
+                del events[event][events[event].index(callback)]
+
+        del self.plugins[plugin.name]
+            
     def connect(self) -> None:
         """
             This function is used to connect to Discord.
@@ -151,7 +243,7 @@ class Client:
         """
             This function is used to connect to Discord with autosharding.
         """
-        self.info = self.loop.run_until_complete(self.http.request('/gateway/bot', 'GET'))
+        self.info = self.loop.run_until_complete(self.http.request(Router("/gateway/bot", "GET")))
 
         for shard in range(self.info['shards']):
 
@@ -170,24 +262,24 @@ class Client:
         """
             This function is used to start a shard.
         """
-
-        url = await self.http.request('/gateway', 'GET')
         
-        self.gw = gateway = Gateway(
+        gateway = Gateway(
             token = self.token,
             intents = self.intents,
-            url = url['url'],
+            url = self.url,
             shard_id = shard_id,
             shard_count = shard_count,
         )
 
-        self.gw.append_handler({
-            0: self.handle_event,
+        self.shards[shard_id] = gateway
+
+        gateway.append_handler({
+            0: functools.partial(self.handle_event, gateway),
         })
 
         asyncio.create_task(gateway.start_connection())
 
-    async def handle_middleware(self, client: "Client", gateway: "Gateway" , payload: "GatewayDispatch") -> None:
+    async def handle_middleware(self, payload: "GatewayDispatch", gateway: "Gateway") -> None:
         """
             This function is used to handle middleware events.
             It's called before the event is called. Which means that you can modify the event.
@@ -197,7 +289,11 @@ class Client:
         ware = events.get(event,None)
 
         if ware is not None:
-            extractable = await ware(client, gateway, payload)
+
+            try:
+                extractable = await ware(self, gateway, payload)
+            except:
+                extractable = (None, None)
 
             logger.debug(f"Middleware {event} has been called.")
 
@@ -215,17 +311,29 @@ class Client:
 
         return (None, None, None)
 
-    async def handle_event(self, payload: "GatewayDispatch") -> None:
+    async def handle_event(self, payload: "GatewayDispatch", gateway: "Gateway") -> None:
         """
             This function is used to handle an event.
             It's called after the middleware is called.
         """
-        event, args, callback = await self.handle_middleware(self, self.gw, payload)
+        event, args, callback = await self.handle_middleware(gateway , payload)
         
         if callback != None:
-            await callback(*args)
+            if asyncio.isfuture(callback):
+                if isinstance(callback, asyncio.Future):
+                    if callback.done():
+                        pass
+                    else:
+                        callback.set_result(*args)
+            else:
+                if self.is_ready is False:
+                    return
+                
+                else:
+                    for i in callback:
+                        await i(*args)
 
-    def get_guild(self, guild_id: str) -> "Guild":
+    def get_guild(self, id: str) -> "Guild":
         """Get a guild from the cache.
 
         Parameters
@@ -236,13 +344,13 @@ class Client:
         Returns
         -------
         :class:`Guild`
-            The guild.
+            The guild from the cache.
         """
 
-        return self.guilds.get(guild_id, None)
+        return self.guilds.get(str(id), None)
 
     def get_user(self, id: Snowflake) -> typing.Union["User", None]:
-        """Get a user of the guild.
+        """Get a user from the cache.
 
         Parameters
         ----------
@@ -252,13 +360,13 @@ class Client:
         Returns
         -------
         :class:`User`
-            The user of the guild.
+            The user from the cache.
         """
 
         return self.users.get(str(id), None)
 
     def get_channel(self, id: Snowflake) -> typing.Union["All", None]:
-        """Get a channel of the guild.
+        """Get a channel from the cache
 
         Parameters
         ----------
@@ -268,13 +376,13 @@ class Client:
         Returns
         -------
         :class:`All`
-            The channel of the guild.
+            The channel from the cache.
         """
 
         return self.channels.get(str(id), None)
 
     def get_thread(self, id: Snowflake) -> typing.Union["ThreadChannel", None]:
-        """Get a thread of the guild.
+        """Get a thread from the cache.
 
         Parameters
         ----------
@@ -284,13 +392,13 @@ class Client:
         Returns
         -------
         :class:`TextChannel`
-            The thread of the guild.
+            The thread from the cache.
         """
 
         return self.threads.get(str(id), None)
 
     def get_message(self, id: Snowflake) -> typing.Union["Message", None]:
-        """Get a message of the guild.
+        """Get a message from the cache.
 
         Parameters
         ----------
@@ -300,7 +408,7 @@ class Client:
         Returns
         -------
         :class:`Message`
-            The message of the guild.
+            The message from the cache
         """
 
         return self.messages.get(str(id), None)

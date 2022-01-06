@@ -55,3 +55,27 @@ class Emoji(Hashable):
         
         self.animated: bool = data.get('animated')
         """Whether the emoji is animated or not."""
+
+    async def edit(self, reason: str = None, **kwargs) -> None:
+        """
+            Edits the emoji.
+
+            Parameters
+            ----------
+            name : `str`
+                The name of the emoji.
+            roles : `typing.Union[typing.List[Snowflake], None]`
+                The roles of the emoji.
+        """
+        await self.client.api.guild_edit_emoji(self.guild_id, self.id, reason, **kwargs)
+
+    async def delete(self, reason: str = None) -> None:
+        """
+            Deletes the emoji.
+
+            Parameters
+            ----------
+            reason : `str`
+                The reason for deleting the emoji.
+        """
+        await self.client.api.guild_delete_emoji(self.guild_id, self.id, reason)

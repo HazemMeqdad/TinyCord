@@ -1,6 +1,7 @@
-from enum import Enum
+from enum import IntEnum
+from .models.mixins import EnumMixin
 
-class Intents(Enum):
+class Intents(EnumMixin, IntEnum):
     """
         This is the intents enum.
         This used to define the intents that are used to connect to Discord.
@@ -40,8 +41,9 @@ class Intents(Enum):
             [int(i) for i in Intents.__members__.values()]
         )
 
-    def __int__(self) -> int:
+    @staticmethod
+    def default() -> int:
         """
-            This function is used to get the int value of the enum.
+            This function is used to get the default int value of the enum.
         """
-        return int(self.value)
+        return Intents.GUILDS | Intents.GUILD_MEMBERS | Intents.GUILD_MESSAGES

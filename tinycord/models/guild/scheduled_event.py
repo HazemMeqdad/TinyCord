@@ -65,7 +65,3 @@ class ScheduledEvent(Hashable):
 
         self.user_count: typing.Union[int, None] = data.get('user_count')
         """The user count of the scheduled event."""
-
-
-
-

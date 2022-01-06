@@ -164,6 +164,46 @@ class Gateway:
             "d": payload,
         })
 
+    async def voice_connect(self, self_mute: bool, self_deaf: bool, channel_id: int, guild_id: int) -> None:
+        """
+            |coro|
+            This function is used to connect to a voice.
+
+            Parameters
+            ----------
+            self_mute: `bool`
+                The self mute of the voice.
+            self_deaf: `bool`
+                The self deaf of the voice.
+            channel_id: `int`
+                The channel id of the voice.
+            guild_id: `int`
+                The guild id of the voice.
+        """
+        await self.send(4,{
+            "guild_id": guild_id,
+            "channel_id": channel_id,
+            "self_mute": self_mute,
+            "self_deaf": self_deaf,
+        })
+
+    async def voice_disconnect(self, guild_id: int) -> None:
+        """
+            |coro|
+            This function is used to disconnect from a voice.
+
+            Parameters
+            ----------
+            guild_id: `int`
+                The guild id of the voice.
+        """
+        await self.send(4,{
+            "guild_id": guild_id,
+            "channel_id": None,
+            "self_mute": False,
+            "self_deaf": False,
+        })
+
     async def send_identify(self, payload: GatewayDispatch) -> None:
         """
             |coro|
@@ -321,8 +361,6 @@ class Gateway:
 
         await asyncio.sleep(5)
 
-        self.should_reconnect = False
-
         await self.start_connection()
 
     async def handle_heartbeat_ack(self, payload: GatewayDispatch):
@@ -350,3 +388,6 @@ class Gateway:
             logger.debug(
                 f" {self.shard_id} Heartbeat sent to gateway..."
             )
+
+    def __repr__(self) -> str:
+        return f'<GatewayShard {self.shard_id}>'

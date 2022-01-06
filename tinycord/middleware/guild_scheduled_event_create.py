@@ -30,7 +30,7 @@ async def scheduled_event_create(client: "Client", gateway: "Gateway", event: "G
 
     guild.guild_scheduled_events[str(scheduled_event.id)] = scheduled_event
 
-    return "on_scheduled_event_create", [
+    return "on_scheduled_create", [
         guild, scheduled_event
     ]
     """ The event that was dispatched. """

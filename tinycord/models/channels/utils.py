@@ -6,7 +6,7 @@ from .voice import VoiceChannel
 from ...utils import Snowflake
 from .thread import ThreadChannel
 
-def deserialize_channel(client, **data):
+def deserialize_channel(client, guild_id , **data):
     """
     This is the deserialize_channel function.
     
@@ -23,7 +23,9 @@ def deserialize_channel(client, **data):
     -------
         Channel
     """
-    guild_id = Snowflake(data.get('guild_id'))
+    
+    if type(guild_id) != Snowflake:
+        guild_id = Snowflake(guild_id)
     if data['type'] == 0:
         return TextChannel(client, guild_id, **data)
     elif data['type'] == 2:

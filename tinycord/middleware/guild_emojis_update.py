@@ -4,12 +4,12 @@ if typing.TYPE_CHECKING:
     from ..client import Client
     from ..core import Gateway, GatewayDispatch
 
-from ..models import deserialize_channel
+from ..models import Emoji
     
-async def channel_update(client: "Client", gateway: "Gateway", event: "GatewayDispatch") -> typing.List[typing.Awaitable]:
+async def guild_emojis_update(client: "Client", gateway: "Gateway", event: "GatewayDispatch") -> typing.List[typing.Awaitable]:
     """
         |coro|
-        This event is called when a channel is created.
+        This event called when a guild's emojis have been updated..
         It does parse the channel data, update the data and update the cache and return the event with the args.
 
         Parameters
@@ -21,24 +21,24 @@ async def channel_update(client: "Client", gateway: "Gateway", event: "GatewayDi
         event : `GatewayDispatch`
             The event that was dispatched.
     """
-    after = deserialize_channel(client, **event.data)
-    """ The channel that was created. """
+    guild = client.get_guild(event.data["guild_id"])
+    """ The guild that the emojis were updated in. """
 
-    before = client.get_channel(after.id)
-    """ The old channel from the cache. """
+    after = {emoji['id']: Emoji(client, **emoji) for emoji in event.data['emojis']}
+    """ The new emojis. """
 
-    guild = client.get_guild(after.guild_id)
-    """ The guild that the channel was created in. """
-    
-    client.channels[str(after.id)] = after
-    guild.channels[str(after.id)] = after
+    before = {emoji.id: emoji for emoji in guild.emojis if emoji.id in after}
+    """ The old emojis from the cache. """
+
+    guild.emojis.update(after)
     """ Update the cache. """
 
-    return "on_channel_update", [
+
+    return "on_guild_emojis_update", [
         guild, before, after
     ]
     """ The event that was dispatched. """
 
 def export():
     """ Exports the function. """
-    return channel_update
+    return guild_emojis_update

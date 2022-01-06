@@ -5,7 +5,7 @@ if typing.TYPE_CHECKING:
     from ...client import Client
 
 from ..mixins import Hashable
-from ...utils import Snowflake
+from ...utils import Snowflake, Permission
 
 @dataclasses.dataclass(repr=False)
 class Role(Hashable):
@@ -65,7 +65,8 @@ class Role(Hashable):
         self.position: str = data.get('position')
         """The position of the role."""
 
-        self.permissions: str = data.get('permissions')
+        self.permissions: typing.List[str] = Permission(
+            data.get('permissions')).compute()
         """The permissions of the role."""
 
         self.managed: bool = data.get('managed')
@@ -79,3 +80,42 @@ class Role(Hashable):
 
         self.tags: typing.Dict[str, typing.Any] = data.get('tags')
         """The tags of the role."""
+
+    async def edit(self, reason: str = None, **kwargs) -> None:
+        """
+            Edits the role.
+
+            Parameters
+            ----------
+            reason : `str`
+                The reason for editing the role.
+            **kwargs : `typing.Dict`
+                The data that is used to edit the role.
+        """
+
+        await self.client.api.guild_edit_role(self.guild_id, self.id, reason, **kwargs)
+
+    async def delete(self, reason: str = None) -> None:
+        """
+            Deletes the role.
+
+            Parameters
+            ----------
+            reason : `str`
+                The reason for deleting the role.
+        """
+
+        await self.client.api.guild_delete_role(self.guild_id, self.id, reason)
+
+    @property
+    def is_default(self) -> bool:
+        """
+            Whether the role is the default role.
+
+            Returns
+            -------
+            `bool`
+                Whether the role is the default role.
+        """
+
+        return self.name == "@everyone"
