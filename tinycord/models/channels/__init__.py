@@ -6,7 +6,7 @@ from .voice import VoiceChannel
 from .types import Channeltypes
 from .stage import StageChannel
 from .news import NewsChannel
-from .thread import ThreadChannel
+from .thread import ThreadChannel, ThreadMember
 
 from .invite import Invite
 
