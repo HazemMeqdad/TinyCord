@@ -30,7 +30,7 @@ async def interaction_create(client: "Client", gateway: "Gateway", event: "Gatew
         application_id=data["application_id"],
         command_id=data.get("data")["id"],
         name=data.get("data")["name"],
-        # options=,
+        options=Option(),
     )
 
     return "on_interaction_create", [
